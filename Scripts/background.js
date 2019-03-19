@@ -4,24 +4,32 @@ window.serverBaseURL = ""
 window.username = ""
 window.password = ""
 window.haveLoggedIn = false
-const messageType = {
-    login: "login",
-    evaluate: "evaluate",
-    loggedIn:"loggedIn",
-    displayMessage: "displayMessage",
-    loginFailedMessage: "loginFailedMessage",
-    beginevaluate: "beginevaluate",
-    package: "package"
+var messageType = {
+    login: "login",  //message to send that we are in the process of logging in
+    evaluate: "evaluate",  //message to send that we are evaluating
+    loggedIn:"loggedIn",    //message to send that we are in the loggedin
+    displayMessage: "displayMessage",  //message to send that we have data from REST and wish to display it
+    loginFailedMessage: "loginFailedMessage",  //message to send that login failed
+    beginevaluate: "beginevaluate",  //message to send that we are beginning the evaluation process, it's different to the evaluatew message for a readon that TODO I fgogot
+    package: "package" //passing a package identifier from content to the background to kick off the eval
 };
+
 
 var formats = {
     maven: "maven",
     npm: "npm",
     nuget: "nuget",
     gem: "gem",
-    pypi: "pypi"
+    pypi: "pypi",
+    packagist: "packagist",
+    cocoapods: "cocoapods"
 }
+  
 
+const dataSource = {
+    NEXUSIQ: 'NEXUSIQ',
+    OSSINDEX: 'OSSINDEX'
+  }
 
 // getActiveTab();
 
@@ -103,7 +111,7 @@ function loadSettingsAndEvaluate(package){
             // settings = BuildEmptySettings();
             
             let errorMessage = {
-                messageType: messageType.loginFailedMessage,
+                messagetype: messageType.loginFailedMessage,
                 message: {response:"no Login Settings have been saved yet. Go to the options page."},
                 package: package
             }
@@ -175,7 +183,7 @@ function login(settings){
                 console.log('happy days');
             }
             let loggedInMessage = {
-                messageType: messageType.loggedIn,
+                messagetype: messageType.loggedIn,
                 message: retVal
             }
             window.haveLoggedIn = true;
@@ -189,7 +197,7 @@ function login(settings){
         console.log(xhr);
         retVal = {error: xhr.status, response: xhr.responseText};
         let loginFailedMessage = {
-            messageType: messageType.loginFailedMessage,
+            messagetype: messageType.loginFailedMessage,
             message: retVal,
             
         }
@@ -237,7 +245,16 @@ function evaluate(package, settings){
     console.log(package)
     console.log(settings)
     removeCookies(settings);
-    callIQ(package, settings);
+    switch(package.datasource) {
+        case dataSource.NEXUSIQ:
+            resp = callIQ(package, settings);
+            break;
+        case dataSource.OSSINDEX:
+          resp = addDataOSSIndex(package, settings);
+          break;
+        default:
+          alert('Unhandled');
+    }
 }
 
 function removeCookies(settings){
@@ -286,11 +303,14 @@ function callIQ(package, settings){
         case formats.nuget:
             requestdata = NexusFormatNuget(package);
             break;
+        
         default:
             return;
             break;
     }
     
+ 
+  
     
     let inputStr = JSON.stringify(requestdata);
     var retVal
@@ -338,7 +358,7 @@ function callIQ(package, settings){
                 console.log('happy days');
             }
             let displayMessage = {
-                messageType: messageType.displayMessage,
+                messagetype: messageType.displayMessage,
                 message: retVal,
                 package: package
             }
@@ -354,7 +374,7 @@ function callIQ(package, settings){
         let response = {errorMessage: xhr.responseText};
         retVal = {error: xhr.status, response: response};
         let displayMessage = {
-            messageType: messageType.displayMessage,
+            messagetype: messageType.displayMessage,
             message: retVal,
             package: package
         }
@@ -447,25 +467,25 @@ function getActiveTab(){
 //     });    
 // };
   
-function DefaultSettings(){
-    console.log("DefaultSettings:");
-    var username = "admin"
-    var password = "admin123";
-    var url = "http://localhost:8011/"    
+// function DefaultSettings(){
+//     console.log("DefaultSettings:");
+//     var username = "admin"
+//     var password = "admin123";
+//     var url = "http://localhost:8011/"    
   
-      //alert(value);
-    chrome.storage.sync.set({'url':url}, function(){
-        //alert('saved'+ value);
-        chrome.storage.sync.set({'username':username}, function(){
-          //alert('saved'+ value);
-          chrome.storage.sync.set({'password':password}, function(){
-            //alert('saved'+ value);
-          });
-        });    
-    });
-    let settings = BuildSettings(url, username, password);
-    return settings;
-};
+//       //alert(value);
+//     chrome.storage.sync.set({'url':url}, function(){
+//         //alert('saved'+ value);
+//         chrome.storage.sync.set({'username':username}, function(){
+//           //alert('saved'+ value);
+//           chrome.storage.sync.set({'password':password}, function(){
+//             //alert('saved'+ value);
+//           });
+//         });    
+//     });
+//     let settings = BuildSettings(url, username, password);
+//     return settings;
+// };
 
 function NexusFormatNPM(package){  
 	//return a dictionary in Nexus Format
@@ -673,9 +693,113 @@ chrome.runtime.onInstalled.addListener(function() {
           pageUrl: {hostEquals: 'rubygems.org', 
                     schemes: ['https'],
                     pathContains: "gems"}, 
-        })
+        }),
+        //OSSINDEX
+        new chrome.declarativeContent.PageStateMatcher({
+            pageUrl: {hostEquals: 'packagist.org', 
+                      schemes: ['https'],
+                      pathContains: "packages"}, 
+          }),
+          new chrome.declarativeContent.PageStateMatcher({
+            pageUrl: {hostEquals: 'cocoapods.org', 
+                      schemes: ['https'],
+                      pathContains: "pods"}, 
+          })  
         ],
             actions: [new chrome.declarativeContent.ShowPageAction()]
       }]);
     });
   });
+
+  function addDataOSSIndex( package, settings){// pass your data in method
+    //OSSINdex is anonymous
+    console.log('entering addDataOSSIndex');
+    var retVal; //return object including status
+    retVal = {error: 1002, response: "Unspecified error"};
+    // https://ossindex.sonatype.org/api/v3/component-report/composer%3Adrupal%2Fdrupal%405
+    //type:namespace/name@version?qualifiers#subpath 
+    var format = package.format;
+    var name = package.name;
+    var version = package.version;
+    var OSSIndexURL= "https://ossindex.sonatype.org/api/v3/component-report/" + format + '%3A'+ name + '%40' + version
+    var status = false;
+    //components[""0""].componentIdentifier.coordinates.packageId
+    console.log('settings');
+    console.log(settings);
+    console.log(settings.auth);
+    console.log("inputdata");
+    console.log(package);
+    console.log("OSSIndexURL");
+    console.log(OSSIndexURL);
+    inputStr=JSON.stringify(package);
+  
+        
+    if (!settings.baseURL){
+        retVal = {error: 1001, response: "Problem retrieving URL"};
+        console.log('no base url');
+        return (retVal);
+    }
+    $.ajax({            
+            type: "GET",
+            // beforeSend: function (request)
+            // {
+            //     //request.withCredentials = true;
+            //     // request.setRequestHeader("Authorization", settings.auth);
+            // },            
+            async: true,
+            url: OSSIndexURL,
+            data: inputStr,
+            
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            crossDomain: true,
+            success: function (responseData, status, jqXHR) {
+                console.log('ajax success');
+                console.log(responseData);
+                status = true;
+                retVal = {error: 0, response: responseData}; //no error
+                //return (retVal);
+                //handleResponseData(responseData);
+                //alert("success");// write success in " "
+                let displayMessage = {
+                    messagetype: messageType.displayMessage,
+                    message: retVal,
+                    package: package
+                }
+                console.log('sendmessage');
+                console.log(displayMessage);
+                chrome.runtime.sendMessage(displayMessage);
+                return(retVal);
+            },
+  
+            error: function (jqXHR, status) {
+                // error handler
+                console.log('some error');
+                console.log(jqXHR);
+                //console.log(jqXHR.responseText  + jqXHR.responseText + jqXHR.status);
+                //alert('fail' + jqXHR.responseText  + '\r\n' + jqXHR.statusText + '\r\n' + 'Code:' +  jqXHR.status);
+                retVal={error: 500, response: jqXHR};
+                return (retVal);
+            },
+            timeout: 3000 // sets timeout to 3 seconds
+        });
+  
+    if(retVal.error == 0){
+        let componentInfoData = retVal;
+        console.log('retVal');
+        console.log(retVal);
+        var componentDetail = componentInfoData.response;
+        console.log("componentInfoData");
+        console.log(componentDetail);
+        
+        
+    }else{
+        //an error
+        console.log('an eror occurred, show the response')
+        // $("#error").html(retVal.response.statusText);
+        // $("#error").show(1000);
+    }
+    // window.responsedata = retVal;
+    return retVal;
+  };
+  

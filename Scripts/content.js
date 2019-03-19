@@ -4,8 +4,16 @@ var formats = {
   npm: "npm",
   nuget: "nuget",
   gem: "gem",
-  pypi: "pypi"
+  pypi: "pypi",
+  packagist: "packagist",
+  cocoapods: "cocoapods"
 }
+
+const dataSource = {
+  NEXUSIQ: 'NEXUSIQ',
+  OSSINDEX: 'OSSINDEX'
+}
+
 
 chrome.runtime.onMessage.addListener(gotMessage);
 var messageType = {
@@ -54,18 +62,21 @@ function ParsePage(){
     //package varies depending on eco-system
     console.log('ParsePage');
     //who I am what is my address?
-    var package;
+    let package;
     let format;
+    let datasource;
     let url = location.href; //'https://www.npmjs.com/package/lodash';
     console.log(url);
     if (url.search('search.maven.org/artifact/') >=0){
       format = formats.maven;
+      datasource = dataSource.NEXUSIQ;
       package = parseMaven(format, url);
 
     }
     //https://mvnrepository.com/artifact/commons-collections/commons-collections/3.2.1
     if (url.search('https://mvnrepository.com/artifact/') >=0){
       format = formats.maven;
+      datasource = dataSource.NEXUSIQ;
       package = parseMaven(format, url);
 
     }
@@ -73,11 +84,13 @@ function ParsePage(){
     if (url.search('www.npmjs.com/package/') >= 0){
       //'https://www.npmjs.com/package/lodash'};
       format = formats.npm;
+      datasource = dataSource.NEXUSIQ;
       package = parseNPM(format, url);
     }
     if (url.search('nuget.org/packages/') >=0){
       //https://www.nuget.org/packages/LibGit2Sharp/0.1.0
       format = formats.nuget;
+      datasource = dataSource.NEXUSIQ;
       package =  parseNuget(format, url);
 
     }    
@@ -85,6 +98,7 @@ function ParsePage(){
     if (url.search('pypi.org/project/') >=0){
       //https://pypi.org/project/Django/1.6/
       format = formats.pypi;
+      datasource = dataSource.NEXUSIQ;
       package = parsePyPI(format, url);
 
     }
@@ -92,15 +106,36 @@ function ParsePage(){
     if (url.search('rubygems.org/gems/') >=0){
       //https://rubygems.org/gems/bundler/versions/1.16.1
       format = formats.gem;
+      datasource = dataSource.NEXUSIQ;
       package = parseRuby(format, url);
 
     }
     
+    //OSSIndex    
+    if (url.search('packagist.org/packages/') >=0){
+      //https://rubygems.org/gems/bundler/versions/1.16.1
+      format = formats.packagist;
+      datasource = dataSource.OSSINDEX;
+      package = parsePackagist(format, url, datasource);
+
+    }
+    if (url.search('cocoapods.org/pods/') >=0){
+      //https://rubygems.org/gems/bundler/versions/1.16.1
+      format = formats.cocoapods;
+      datasource = dataSource.OSSINDEX;
+      package = parseCocoaPods(format, url, datasource);
+
+    }
+
+
     console.log("ParsePage Complete");
     console.log(package);
     //now we write this to background as
     //we pass variables through background
-    message = {messageType: messageType.package, payload: package};
+    message = {
+      messagetype: messageType.package, 
+      payload: package
+    };
     chrome.runtime.sendMessage(message, function(response){
         //sends a message to background handler
         //what should I do with the callback?
@@ -243,3 +278,58 @@ function parseRuby(format, url) {
     return {format: format, name:name, version:version}
   };
 ///////////////////////END PASTED
+
+
+
+function parsePackagist(format, url, datasource) {
+  //server is packagist, format is composer
+  console.log('parsePackagist:' +  url);
+  var elements = url.split('/')
+  //https://packagist.org/packages/drupal/drupal
+  //Specific version is with a hash
+  //https://packagist.org/packages/drupal/drupal#8.6.2
+  var namePt1 = elements[4];
+  var namePt2 = elements[5];
+  name = namePt1 + "/" + namePt2
+  var whereIs = namePt2.search("#")
+  //is the version number in the URL? if so get that, else get it from the HTML
+  if (whereIs > -1 ){
+    version = namePt2.substr(whereIs +1)
+  } else{
+    //get the version from the HTML as we are on the generic page
+    //#headline > div > h1 > span
+    versionHTML = $("span.version-number").first().text()
+    console.log('versionHTML');
+    console.log(versionHTML);
+    version=versionHTML.trim();
+  }
+  name = encodeURIComponent(name);
+  version = encodeURIComponent(version);
+  return {
+    format: format, 
+    datasource: datasource,
+    name: name, 
+    version: version
+  }
+}
+
+  function parseCocoaPods(format, url, datasource) {
+    console.log('parseCocoaPods');
+    var elements = url.split('/')
+    //https://cocoapods.org/pods/TestFairy
+    name = elements[4];
+    //#headline > div > h1 > span
+    versionHTML = $("H1 span").first().text()
+    console.log('versionHTML');
+    console.log(versionHTML);
+    version=versionHTML.trim();
+
+    name = encodeURIComponent(name);
+    version = encodeURIComponent(version);
+    return {
+      format: format, 
+      datasource: datasource,
+      name: name, 
+      version: version
+    }
+  }

@@ -7,8 +7,14 @@ var messageType = {
     loggedIn:"loggedIn",    //message to send that we are in the loggedin
     displayMessage: "displayMessage",  //message to send that we have data from REST and wish to display it
     loginFailedMessage: "loginFailedMessage",  //message to send that login failed
-    beginevaluate: "beginevaluate"  //message to send that we are beginning the evaluation process, it's different to the evaluatew message for a readon that TODO I fgogot
+    beginevaluate: "beginevaluate",  //message to send that we are beginning the evaluation process, it's different to the evaluatew message for a readon that TODO I fgogot
+    package: "package" //passing a package identifier from content to the background to kick off the eval
+
 };
+const dataSource = {
+    NEXUSIQ: 'NEXUSIQ',
+    OSSINDEX: 'OSSINDEX'
+  }
 
 
 var formats = {
@@ -16,8 +22,11 @@ var formats = {
     npm: "npm",
     nuget: "nuget",
     gem: "gem",
-    pypi: "pypi"
+    pypi: "pypi",
+    packagist: "packagist",
+    cocoapods: "cocoapods"
 }
+
 //var settings;
 //var componentInfoData;
 $(function () {
@@ -100,7 +109,7 @@ function gotMessage(message, sender, sendResponse){
     //this is the callback handler for a message received
     console.log('popup got message');
     console.log(respMessage);
-    switch(respMessage.messageType){
+    switch(respMessage.messagetype){
         case messageType.displayMessage:            
             // alert("displayMessage");
             if (respMessage.message.error){
@@ -113,19 +122,19 @@ function gotMessage(message, sender, sendResponse){
                 console.log(componentDetails);
                 // $("#response").html(findings.toString());
                 // displayFindings(message);
-                createHTML(message);
+                let htmlCreated = createHTML(message);
             }            
             break;
         case messageType.loggedIn:
             //logged in so now we evaluate
             console.log('logged in, now evaluate');
-            beginEvaluation();
+            let evalBegan = beginEvaluation();
             break;
         case messageType.loginFailedMessage:
             //display error
             console.log('display error');
             console.log(message);
-            showError(message.message.response);
+            let errorShown = showError(message.message.response);
             break;
         default:
             //do nothing for now
@@ -302,11 +311,78 @@ function createHTML(message)
     // const thisComponent = componentDetails["0"];
     // console.log('thisComponent')
     // console.log(thisComponent)
-    
-    renderComponentData(message);
-    renderLicenseData(message);
-    renderSecurityData(message);
+    switch (message.package.datasource){
+        case dataSource.NEXUSIQ:
+            renderComponentData(message);
+            renderLicenseData(message);
+            renderSecurityData(message);
+            break;
+        case dataSource.OSSINDEX:
+        //from OSSINdex
+            console.log('OSSINDEX');            
+            renderComponentDataOSSIndex(message);
+            renderLicenseDataOSSIndex(message);
+            renderSecurityDataOSSIndex(message);
+
+            break;
+        default:
+            //not handled
+            console.log('unhandled case');
+            console.log(message)
+    }
 };
+
+
+function renderComponentDataOSSIndex(message){
+    console.log('renderComponentData');
+    console.log(message);
+    $("#format").html(message.package.format);
+    $("#package").html(message.package.name);
+    $("#version").html(message.package.version);
+
+    $("#hash").html(message.message.response.coordinates);
+    
+    //document.getElementById("matchstate").innerHTML = componentInfoData.componentDetails["0"].matchState;
+    $("#matchstate").html(message.message.response.reference)
+}
+function renderLicenseDataOSSIndex(message){
+    //not supported
+    $("#declaredlicenses").html("<h3>OSSIndex does not carry license data</h3>")
+}
+function renderSecurityDataOSSIndex(message){
+ 
+    let securityIssues = message.message.response.vulnerabilities;
+    let strAccordion = "";
+    console.log(securityIssues.length);
+    
+    if(securityIssues.length > 0){
+        for(i=0; i < securityIssues.length; i++){
+            let securityIssue = securityIssues[i];
+
+            //console.log(securityIssue.reference);
+            //console.log(i);
+            strAccordion += '<h3>' + securityIssue + '</h3>';
+            strAccordion += '<div>';
+            strAccordion += '<p>TO BE ADVISED</p>';
+            strAccordion += '</div>';            
+        }
+        console.log(strAccordion);
+        $("#accordion").html(strAccordion);
+        //$('#accordion').accordion({heightStyle: 'content'});
+        $('#accordion').accordion({heightStyle: 'panel'});
+        // var autoHeight = $( "#accordion" ).accordion( "option", "autoHeight" );
+        // $( "#accordion" ).accordion( "option", "autoHeight", false );
+        // $("#accordion").accordion();
+    }else{
+        strAccordion += '<h3>No Security Issues Found</h3>';
+        $("#accordion").html(strAccordion);
+        //$('#accordion').accordion({heightStyle: 'content'});
+        $('#accordion').accordion({heightStyle: 'panel'});
+
+    }  
+
+}
+
 
 function renderComponentData(message){
     console.log('renderComponentData');
@@ -501,11 +577,11 @@ function hideError()
 function ChangeIconMessage(showVulnerable)  {
     if(showVulnerable) {
         // send message to background script
-        chrome.runtime.sendMessage({ "messageType" : "newIcon", "newIconPath" : "images/IQ_Vulnerable.png" });
+        chrome.runtime.sendMessage({ "messagetype" : "newIcon", "newIconPath" : "images/IQ_Vulnerable.png" });
     }
     else{
         // send message to background script
-        chrome.runtime.sendMessage({ "messageType" : "newIcon",  "newIconPath" : "images/IQ_Default.png"});    
+        chrome.runtime.sendMessage({ "messagetype" : "newIcon",  "newIconPath" : "images/IQ_Default.png"});    
     }
 }
 
