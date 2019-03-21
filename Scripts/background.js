@@ -26,7 +26,7 @@ var formats = {
 }
   
 
-const dataSource = {
+const dataSources = {
     NEXUSIQ: 'NEXUSIQ',
     OSSINDEX: 'OSSINDEX'
   }
@@ -245,32 +245,36 @@ function evaluate(package, settings){
     console.log(package)
     console.log(settings)
     removeCookies(settings);
+
+    // console.log(package.datasource)
     switch(package.datasource) {
-        case dataSource.NEXUSIQ:
+        case dataSources.NEXUSIQ:
             resp = callIQ(package, settings);
             break;
-        case dataSource.OSSINDEX:
+        case dataSources.OSSINDEX:
           resp = addDataOSSIndex(package, settings);
           break;
         default:
-          alert('Unhandled');
+          alert('Unhandled datasource' + package.datasource);
+
     }
 }
 
 function removeCookies(settings){
+    console.log('removeCookies')
     //settings.url = http://iq-server:8070/
     let leftPart = settings.url.search('//')+2;
-    let rightPart = settings.url.search(leftPart, ':')-1;
-    if (settings.url.search(leftPart+2, ':') <0){
-        rightPart = settings.url.search(leftPart, '/')-1;
-        if (rightPart <0){
-            rightPart = settings.url.length;
+    let server = settings.url.substring(leftPart);
+    let rightPart = server.search(':')-1;
+    if (rightPart < 0){
+        rightPart = server.search(leftPart, '/')-1;
+        if (rightPart < 0){
+            rightPart = server.length;
         }
-    }else{
-        rightPart = settings.url.search(leftPart, ':')-1;
     }
+    server = server.substring(0, rightPart+1)
     //".iq-server"
-    let domain = "." + settings.url.substring(leftPart, rightPart);
+    let domain = "." + server;
     chrome.cookies.getAll({domain: domain}, function(cookies) {
         console.log('here');
         for(var i=0; i<cookies.length;i++) {
@@ -279,7 +283,7 @@ function removeCookies(settings){
           chrome.cookies.remove({url: settings.url, name: cookies[i].name});
         }
       });
-    // chrome.cookies.remove({url: settings.url, name: "CLMSESSIONID"});  
+     chrome.cookies.remove({url: settings.url, name: "CLMSESSIONID"});  
 }
 
 function callIQ(package, settings){
@@ -315,7 +319,7 @@ function callIQ(package, settings){
     let inputStr = JSON.stringify(requestdata);
     var retVal
     console.log(inputStr);
-    
+    var response
 
     let xhr = new XMLHttpRequest();
     let url = settings.url;
@@ -340,15 +344,18 @@ function callIQ(package, settings){
                 console.log(xhr);
                 
                 console.log(xhr.responseText);
-                // error = 0
+                error = 0
                 // response = xhr.responseText
+                response = JSON.parse(xhr.responseText);
+
             } else {
-                console.log(xhr.statusText);
-                // error = xhr.status;
-                //response = xhr.statusText;
+                console.log(xhr);
+                error = xhr.status;
+                response = xhr.responseText;
+                // response: "This REST API is meant for system to system integration and can't be accessed with a web browser."
+                // responseText: "This REST API is meant for system to system integration and can't be accessed with a web browser."
             }
-            let response = JSON.parse(xhr.responseText);
-            retVal = {error: xhr.status!==200, response: response};
+            retVal = {error: error, response: response};
             // return
             // let retval = evaluate(package, settings);
             console.log(retVal);

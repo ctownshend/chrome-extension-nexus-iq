@@ -9,7 +9,7 @@ var formats = {
   cocoapods: "cocoapods"
 }
 
-const dataSource = {
+const dataSources = {
   NEXUSIQ: 'NEXUSIQ',
   OSSINDEX: 'OSSINDEX'
 }
@@ -64,19 +64,19 @@ function ParsePage(){
     //who I am what is my address?
     let package;
     let format;
-    let datasource;
+    let datasource = dataSources.NEXUSIQ;;
     let url = location.href; //'https://www.npmjs.com/package/lodash';
     console.log(url);
     if (url.search('search.maven.org/artifact/') >=0){
       format = formats.maven;
-      datasource = dataSource.NEXUSIQ;
+      datasource = dataSources.NEXUSIQ;
       package = parseMaven(format, url);
 
     }
     //https://mvnrepository.com/artifact/commons-collections/commons-collections/3.2.1
     if (url.search('https://mvnrepository.com/artifact/') >=0){
       format = formats.maven;
-      datasource = dataSource.NEXUSIQ;
+      datasource = dataSources.NEXUSIQ;
       package = parseMaven(format, url);
 
     }
@@ -84,13 +84,13 @@ function ParsePage(){
     if (url.search('www.npmjs.com/package/') >= 0){
       //'https://www.npmjs.com/package/lodash'};
       format = formats.npm;
-      datasource = dataSource.NEXUSIQ;
+      datasource = dataSources.NEXUSIQ;
       package = parseNPM(format, url);
     }
     if (url.search('nuget.org/packages/') >=0){
       //https://www.nuget.org/packages/LibGit2Sharp/0.1.0
       format = formats.nuget;
-      datasource = dataSource.NEXUSIQ;
+      datasource = dataSources.NEXUSIQ;
       package =  parseNuget(format, url);
 
     }    
@@ -98,7 +98,7 @@ function ParsePage(){
     if (url.search('pypi.org/project/') >=0){
       //https://pypi.org/project/Django/1.6/
       format = formats.pypi;
-      datasource = dataSource.NEXUSIQ;
+      datasource = dataSources.NEXUSIQ;
       package = parsePyPI(format, url);
 
     }
@@ -106,7 +106,7 @@ function ParsePage(){
     if (url.search('rubygems.org/gems/') >=0){
       //https://rubygems.org/gems/bundler/versions/1.16.1
       format = formats.gem;
-      datasource = dataSource.NEXUSIQ;
+      datasource = dataSources.NEXUSIQ;
       package = parseRuby(format, url);
 
     }
@@ -115,25 +115,26 @@ function ParsePage(){
     if (url.search('packagist.org/packages/') >=0){
       //https://rubygems.org/gems/bundler/versions/1.16.1
       format = formats.packagist;
-      datasource = dataSource.OSSINDEX;
+      datasource = dataSources.OSSINDEX;
       package = parsePackagist(format, url, datasource);
 
     }
     if (url.search('cocoapods.org/pods/') >=0){
       //https://rubygems.org/gems/bundler/versions/1.16.1
       format = formats.cocoapods;
-      datasource = dataSource.OSSINDEX;
+      datasource = dataSources.OSSINDEX;
       package = parseCocoaPods(format, url, datasource);
 
     }
 
-
+    package.datasource = datasource;
     console.log("ParsePage Complete");
     console.log(package);
     //now we write this to background as
     //we pass variables through background
     message = {
       messagetype: messageType.package, 
+      
       payload: package
     };
     chrome.runtime.sendMessage(message, function(response){
