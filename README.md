@@ -24,3 +24,4 @@ Supports scanning components in the following repos
 * https://www.nuget.org/
 * https://rubygems.org/
 * https://pypi.org/
+* https://packagist.org/
