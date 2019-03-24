@@ -1,17 +1,19 @@
 console.log('background.js');
-chrome.runtime.onMessage.addListener(gotMessage);
+if (typeof chrome !== "undefined"){
+    chrome.runtime.onMessage.addListener(gotMessage);
+}
 window.serverBaseURL = ""
 window.username = ""
 window.password = ""
 window.haveLoggedIn = false
 var messageType = {
     login: "login",  //message to send that we are in the process of logging in
-    evaluate: "evaluate",  //message to send that we are evaluating
     loggedIn:"loggedIn",    //message to send that we are in the loggedin
-    displayMessage: "displayMessage",  //message to send that we have data from REST and wish to display it
     loginFailedMessage: "loginFailedMessage",  //message to send that login failed
     beginevaluate: "beginevaluate",  //message to send that we are beginning the evaluation process, it's different to the evaluatew message for a readon that TODO I fgogot
-    package: "package" //passing a package identifier from content to the background to kick off the eval
+    evaluate: "evaluate",  //message to send that we are evaluating
+    artifact: "artifact", //passing a artifact/package identifier from content to the background to kick off the eval
+    displayMessage: "displayMessage"  //message to send that we have data from REST and wish to display it
 };
 
 
@@ -40,7 +42,7 @@ function gotMessage(message, sender, sendResponse){
     var settings;
     var retval;
     var baseURL, username, password;
-    var package;
+    var artifact;
     console.log('message')
     console.log(message)
     switch (message.messagetype){
@@ -57,7 +59,7 @@ function gotMessage(message, sender, sendResponse){
             break;
         case messageType.evaluate:
             //evaluate
-            package = message.package;
+            artifact = message.artifact;
             // window.baseURL = "http://iq-server:8070/"
             // window.username = "admin"
             // window.password = "admin123"
@@ -70,9 +72,9 @@ function gotMessage(message, sender, sendResponse){
             // window.baseURL = baseURL;//"http://localhost:8070/"
             // window.username = username; //"admin"
             // window.password = password;//"admin123"
-            // retval = evaluate(package, settings);
-            // retval = evaluate2(package, settings);
-            retval = loadSettingsAndEvaluate(package);
+            // retval = evaluate(artifact, settings);
+            // retval = evaluate2(artifact, settings);
+            retval = loadSettingsAndEvaluate(artifact);
             break;
         case messageType.displayMessage:            
             //display message
@@ -80,11 +82,11 @@ function gotMessage(message, sender, sendResponse){
             //because it is for the popup only to display
             console.log('background display message message');
             break;
-        case messageType.package:            
+        case messageType.artifact:            
             //display message
             //this needs to be ignored in the background.js
             //because it is for the popup only to display
-            console.log('background package message does not need to respond');
+            console.log('background artifact message does not need to respond');
             break;
         default:
             console.log('unhandled message.messagetype');
@@ -96,7 +98,7 @@ function gotMessage(message, sender, sendResponse){
     
 }
 
-function loadSettingsAndEvaluate(package){
+function loadSettingsAndEvaluate(artifact){
     console.log('loadSettings');
   
     chrome.storage.sync.get(['url', 'username', 'password'], function(data){
@@ -113,7 +115,7 @@ function loadSettingsAndEvaluate(package){
             let errorMessage = {
                 messagetype: messageType.loginFailedMessage,
                 message: {response:"no Login Settings have been saved yet. Go to the options page."},
-                package: package
+                artifact: artifact
             }
             console.log('sendmessage');
             console.log(errorMessage);
@@ -121,7 +123,7 @@ function loadSettingsAndEvaluate(package){
             
         }else{
             settings = BuildSettings(baseURL, username, password);
-            retval = evaluate(package, settings);
+            retval = evaluate(artifact, settings);
         }
         console.log("settings:");
         console.log(settings);        
@@ -129,20 +131,6 @@ function loadSettingsAndEvaluate(package){
     });    
 };
 
-function BuildEmptySettings(){
-    let settings = {
-        username : "",
-        password : "",
-        tok : "",
-        hash : "",
-        auth : "",
-        restEndPoint : "",
-        baseURL : "",
-        url : "",
-        loginEndPoint: "",
-        loginurl: ""
-    }
-}
 
 function login(settings){
     console.log("login");
@@ -175,7 +163,7 @@ function login(settings){
             }
             retVal = {error: xhr.status !== 200, response: xhr.responseText};
             // return
-            // let retval = evaluate(package, settings);
+            // let retval = evaluate(artifact, settings);
             console.log(retVal);
             if (retVal.error){
                 console.log('we got some error');
@@ -211,8 +199,8 @@ function login(settings){
     console.log(xhr);
     
 }
-function zzevaluate2(package, settings){
-    let inputJSON = NexusFormatNPM(package)
+function zzevaluate2(artifact, settings){
+    let inputJSON = NexusFormatNPM(artifact)
     const url = settings.url;
     console.log(settings.auth);
     fetch(url, {
@@ -240,22 +228,22 @@ function zzevaluate2(package, settings){
     );
 }
 
-function evaluate(package, settings){
+function evaluate(artifact, settings){
     console.log('evaluate');
-    console.log(package)
+    console.log(artifact)
     console.log(settings)
     removeCookies(settings);
 
-    // console.log(package.datasource)
-    switch(package.datasource) {
+    // console.log(artifact.datasource)
+    switch(artifact.datasource) {
         case dataSources.NEXUSIQ:
-            resp = callIQ(package, settings);
+            resp = callIQ(artifact, settings);
             break;
         case dataSources.OSSINDEX:
-          resp = addDataOSSIndex(package, settings);
+          resp = addDataOSSIndex(artifact, settings);
           break;
         default:
-          alert('Unhandled datasource' + package.datasource);
+          alert('Unhandled datasource' + artifact.datasource);
 
     }
 }
@@ -286,26 +274,26 @@ function removeCookies(settings){
      chrome.cookies.remove({url: settings.url, name: "CLMSESSIONID"});  
 }
 
-function callIQ(package, settings){
+function callIQ(artifact, settings){
     console.log("evaluate");
     console.log(settings.auth);
-    console.log(package);
-    let format = package.format;
+    console.log(artifact);
+    let format = artifact.format;
     switch (format){
         case formats.npm:
-            requestdata = NexusFormatNPM(package);
+            requestdata = NexusFormatNPM(artifact);
             break;
         case formats.maven:
-            requestdata = NexusFormatMaven(package);
+            requestdata = NexusFormatMaven(artifact);
             break;
         case formats.gem:
-            requestdata = NexusFormatRuby(package);
+            requestdata = NexusFormatRuby(artifact);
             break;
         case formats.pypi:
-            requestdata = NexusFormatPyPI(package);
+            requestdata = NexusFormatPyPI(artifact);
             break;
         case formats.nuget:
-            requestdata = NexusFormatNuget(package);
+            requestdata = NexusFormatNuget(artifact);
             break;
         
         default:
@@ -357,7 +345,7 @@ function callIQ(package, settings){
             }
             retVal = {error: error, response: response};
             // return
-            // let retval = evaluate(package, settings);
+            // let retval = evaluate(artifact, settings);
             console.log(retVal);
             if (retVal.error){
                 console.log('we got some error');
@@ -367,7 +355,7 @@ function callIQ(package, settings){
             let displayMessage = {
                 messagetype: messageType.displayMessage,
                 message: retVal,
-                package: package
+                artifact: artifact
             }
             console.log('sendmessage');
             console.log(displayMessage);
@@ -383,7 +371,7 @@ function callIQ(package, settings){
         let displayMessage = {
             messagetype: messageType.displayMessage,
             message: retVal,
-            package: package
+            artifact: artifact
         }
         chrome.runtime.sendMessage(displayMessage);
         return(retVal);
@@ -494,7 +482,7 @@ function getActiveTab(){
 //     return settings;
 // };
 
-function NexusFormatNPM(package){  
+function NexusFormatNPM(artifact){  
 	//return a dictionary in Nexus Format
     //return dictionary of components
     componentDict = {"components":[	
@@ -502,11 +490,11 @@ function NexusFormatNPM(package){
             "hash": null, 
             "componentIdentifier": 
                 {
-                "format": package.format,
+                "format": artifact.format,
                 "coordinates" : 
                     {
-                        "packageId": package.packageName, 
-                        "version" : package.version
+                        "packageId": artifact.packageName, 
+                        "version" : artifact.version
                     }
                 }
           }
@@ -515,7 +503,7 @@ function NexusFormatNPM(package){
 	return componentDict
 };
 
-function NexusFormatNuget(package){
+function NexusFormatNuget(artifact){
 	//return a dictionary in Nexus Format ofr Nuget
     //return dictionary of components
     componentDict = {
@@ -523,10 +511,10 @@ function NexusFormatNuget(package){
             component = {
                 "hash": null, 
                 "componentIdentifier": {
-                    "format": package.format,
+                    "format": artifact.format,
                     "coordinates" : {
-                        "packageId": package.packageId, 
-                        "version" : package.version
+                        "packageId": artifact.packageId, 
+                        "version" : artifact.version
                         }
                     }
                 }
@@ -535,7 +523,7 @@ function NexusFormatNuget(package){
 	return componentDict
 }
 
-function NexusFormatRuby(package){
+function NexusFormatRuby(artifact){
 	//return a dictionary in Nexus Format
     //return dictionary of components
     //TODO: how to determine the qualifier and the extension??
@@ -544,11 +532,11 @@ function NexusFormatRuby(package){
 			"hash": null, 
 			"componentIdentifier": 
 				{
-				"format": package.format,
+				"format": artifact.format,
 				"coordinates" : 
 					{
-                    "name": package.name, 
-                    "version" : package.version
+                    "name": artifact.name, 
+                    "version" : artifact.version
 					}
 				}
       }
@@ -557,7 +545,7 @@ function NexusFormatRuby(package){
 	return componentDict
 }
 
-function NexusFormatPyPI(package){
+function NexusFormatPyPI(artifact){
 	//return a dictionary in Nexus Format
     //return dictionary of components
     //TODO: how to determine the qualifier and the extension??
@@ -567,12 +555,12 @@ function NexusFormatPyPI(package){
                 "hash": null, 
                 "componentIdentifier": 
                     {
-                    "format": package.format,
+                    "format": artifact.format,
                     "coordinates" : 
                         {
-                            "name": package.name, 
+                            "name": artifact.name, 
                             "qualifier": 'py2.py3-none-any',
-                            "version" : package.version,
+                            "version" : artifact.version,
                             "extension" : 'whl'
                         }
                     }
@@ -582,7 +570,7 @@ function NexusFormatPyPI(package){
 	return componentDict
 }
 
-function NexusFormatMaven(package){  
+function NexusFormatMaven(artifact){  
 	//return a dictionary in Nexus Format
     //return dictionary of components
     componentDict = {"components":[	
@@ -590,13 +578,13 @@ function NexusFormatMaven(package){
 			"hash": null, 
 			"componentIdentifier": 
 				{
-				"format": package.format,
+				"format": artifact.format,
 				"coordinates" : 
 					{
-						"groupId": package.groupId, 
-						"artifactId": package.artifactId, 
-                        "version" : package.version,
-                        'extension': package.extension
+						"groupId": artifact.groupId, 
+						"artifactId": artifact.artifactId, 
+                        "version" : artifact.version,
+                        'extension': artifact.extension
 					}
 				}
       }
@@ -604,21 +592,6 @@ function NexusFormatMaven(package){
   }
 	return componentDict
 }
-
-chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
-    //page was updated
-    if (changeInfo.status == 'complete' && tab.active) {  
-      // do your things
-        console.log('chrome.tabs.onUpdated.addListener');
-        //need to tell the content script to reevaluate
-        //send a message to content.js
-        ToggleIcon(tab);
-    }
-});
- 
-chrome.tabs.onActivated.addListener(function(activeInfo) {
-    console.log(activeInfo.tabId);
-});
 
 function ToggleIcon(tab){
     console.log('ToggleIcon');
@@ -656,6 +629,114 @@ function ToggleIcon(tab){
     }
     console.log(found);
 }
+
+  function addDataOSSIndex( artifact, settings){// pass your data in method
+    //OSSINdex is anonymous
+    console.log('entering addDataOSSIndex');
+    var retVal; //return object including status
+    retVal = {error: 1002, response: "Unspecified error"};
+    // https://ossindex.sonatype.org/api/v3/component-report/composer%3Adrupal%2Fdrupal%405
+    //type:namespace/name@version?qualifiers#subpath 
+    var format = artifact.format;
+    var name = artifact.name;
+    var version = artifact.version;
+    var OSSIndexURL= "https://ossindex.sonatype.org/api/v3/component-report/" + format + '%3A'+ name + '%40' + version
+    var status = false;
+    //components[""0""].componentIdentifier.coordinates.packageId
+    console.log('settings');
+    console.log(settings);
+    console.log(settings.auth);
+    console.log("inputdata");
+    console.log(artifact);
+    console.log("OSSIndexURL");
+    console.log(OSSIndexURL);
+    inputStr=JSON.stringify(artifact);
+  
+        
+    if (!settings.baseURL){
+        retVal = {error: 1001, response: "Problem retrieving URL"};
+        console.log('no base url');
+        return (retVal);
+    }
+    $.ajax({            
+            type: "GET",
+            // beforeSend: function (request)
+            // {
+            //     //request.withCredentials = true;
+            //     // request.setRequestHeader("Authorization", settings.auth);
+            // },            
+            async: true,
+            url: OSSIndexURL,
+            data: inputStr,
+            
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            crossDomain: true,
+            success: function (responseData, status, jqXHR) {
+                console.log('ajax success');
+                console.log(responseData);
+                status = true;
+                retVal = {error: 0, response: responseData}; //no error
+                //return (retVal);
+                //handleResponseData(responseData);
+                //alert("success");// write success in " "
+                let displayMessage = {
+                    messagetype: messageType.displayMessage,
+                    message: retVal,
+                    artifact: artifact
+                }
+                console.log('sendmessage');
+                console.log(displayMessage);
+                chrome.runtime.sendMessage(displayMessage);
+                return(retVal);
+            },
+  
+            error: function (jqXHR, status) {
+                // error handler
+                console.log('some error');
+                console.log(jqXHR);
+                //console.log(jqXHR.responseText  + jqXHR.responseText + jqXHR.status);
+                //alert('fail' + jqXHR.responseText  + '\r\n' + jqXHR.statusText + '\r\n' + 'Code:' +  jqXHR.status);
+                retVal={error: 500, response: jqXHR};
+                return (retVal);
+            },
+            timeout: 3000 // sets timeout to 3 seconds
+        });
+  
+    if(retVal.error == 0){
+        let componentInfoData = retVal;
+        console.log('retVal');
+        console.log(retVal);
+        var componentDetail = componentInfoData.response;
+        console.log("componentInfoData");
+        console.log(componentDetail);
+        
+        
+    }else{
+        //an error
+        console.log('an eror occurred, show the response')
+        // $("#error").html(retVal.response.statusText);
+        // $("#error").show(1000);
+    }
+    // window.responsedata = retVal;
+    return retVal;
+  };
+ 
+
+chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
+    //page was updated
+    if (changeInfo.status == 'complete' && tab.active) {  
+      // do your things
+        console.log('chrome.tabs.onUpdated.addListener');
+        //need to tell the content script to reevaluate
+        //send a message to content.js
+        ToggleIcon(tab);
+    }
+});
+ 
+chrome.tabs.onActivated.addListener(function(activeInfo) {
+    console.log(activeInfo.tabId);
+});
 
 chrome.runtime.onInstalled.addListener(function() {
     // loadSettings();
@@ -718,95 +799,4 @@ chrome.runtime.onInstalled.addListener(function() {
     });
   });
 
-  function addDataOSSIndex( package, settings){// pass your data in method
-    //OSSINdex is anonymous
-    console.log('entering addDataOSSIndex');
-    var retVal; //return object including status
-    retVal = {error: 1002, response: "Unspecified error"};
-    // https://ossindex.sonatype.org/api/v3/component-report/composer%3Adrupal%2Fdrupal%405
-    //type:namespace/name@version?qualifiers#subpath 
-    var format = package.format;
-    var name = package.name;
-    var version = package.version;
-    var OSSIndexURL= "https://ossindex.sonatype.org/api/v3/component-report/" + format + '%3A'+ name + '%40' + version
-    var status = false;
-    //components[""0""].componentIdentifier.coordinates.packageId
-    console.log('settings');
-    console.log(settings);
-    console.log(settings.auth);
-    console.log("inputdata");
-    console.log(package);
-    console.log("OSSIndexURL");
-    console.log(OSSIndexURL);
-    inputStr=JSON.stringify(package);
-  
-        
-    if (!settings.baseURL){
-        retVal = {error: 1001, response: "Problem retrieving URL"};
-        console.log('no base url');
-        return (retVal);
-    }
-    $.ajax({            
-            type: "GET",
-            // beforeSend: function (request)
-            // {
-            //     //request.withCredentials = true;
-            //     // request.setRequestHeader("Authorization", settings.auth);
-            // },            
-            async: true,
-            url: OSSIndexURL,
-            data: inputStr,
-            
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            crossDomain: true,
-            success: function (responseData, status, jqXHR) {
-                console.log('ajax success');
-                console.log(responseData);
-                status = true;
-                retVal = {error: 0, response: responseData}; //no error
-                //return (retVal);
-                //handleResponseData(responseData);
-                //alert("success");// write success in " "
-                let displayMessage = {
-                    messagetype: messageType.displayMessage,
-                    message: retVal,
-                    package: package
-                }
-                console.log('sendmessage');
-                console.log(displayMessage);
-                chrome.runtime.sendMessage(displayMessage);
-                return(retVal);
-            },
-  
-            error: function (jqXHR, status) {
-                // error handler
-                console.log('some error');
-                console.log(jqXHR);
-                //console.log(jqXHR.responseText  + jqXHR.responseText + jqXHR.status);
-                //alert('fail' + jqXHR.responseText  + '\r\n' + jqXHR.statusText + '\r\n' + 'Code:' +  jqXHR.status);
-                retVal={error: 500, response: jqXHR};
-                return (retVal);
-            },
-            timeout: 3000 // sets timeout to 3 seconds
-        });
-  
-    if(retVal.error == 0){
-        let componentInfoData = retVal;
-        console.log('retVal');
-        console.log(retVal);
-        var componentDetail = componentInfoData.response;
-        console.log("componentInfoData");
-        console.log(componentDetail);
-        
-        
-    }else{
-        //an error
-        console.log('an eror occurred, show the response')
-        // $("#error").html(retVal.response.statusText);
-        // $("#error").show(1000);
-    }
-    // window.responsedata = retVal;
-    return retVal;
-  };
   

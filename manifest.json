@@ -24,7 +24,7 @@
 
       ],
     "background": {
-      "scripts": ["Scripts/jquery-3.3.1.min.js", "Scripts/shared.js", "Scripts/background.js"],
+      "scripts": ["Scripts/jquery-3.3.1.min.js", "Scripts/utils.js", "Scripts/background.js"],
       "persistent": true
     },
     "page_action": {
@@ -36,10 +36,6 @@
          "128": "images/IQ_Default.png"
        }
      }, 
-    // "browser_action":{
-    //     "default_popup": "popup.html",
-    //     "default_title": "Popup test"
-    // },
     "icons": {
       "16": "images/IQ_Default.png",
       "32": "images/IQ_Default.png",
@@ -49,32 +45,32 @@
     "content_scripts":[
       {
         "matches": ["https://search.maven.org/artifact/*"],
-        "js": ["Scripts/jquery-3.3.1.min.js", "Scripts/content.js"]
+        "js": ["Scripts/jquery-3.3.1.min.js", "Scripts/utils.js", "Scripts/content.js"]
       },
       {
         "matches": ["https://mvnrepository.com/artifact/*"],
-        "js": ["Scripts/jquery-3.3.1.min.js", "Scripts/content.js"]
+        "js": ["Scripts/jquery-3.3.1.min.js", "Scripts/utils.js", "Scripts/content.js"]
       },
 
       {
         "matches": ["https://www.npmjs.com/package/*"],
-        "js": ["Scripts/jquery-3.3.1.min.js", "Scripts/content.js"]
+        "js": ["Scripts/jquery-3.3.1.min.js", "Scripts/utils.js", "Scripts/content.js"]
       },
       {
         "matches": ["https://www.nuget.org/packages/*"],
-        "js": ["Scripts/jquery-3.3.1.min.js", "Scripts/content.js"]
+        "js": ["Scripts/jquery-3.3.1.min.js", "Scripts/utils.js", "Scripts/content.js"]
       },
       {
         "matches": ["https://pypi.org/project/*"],
-        "js": ["Scripts/jquery-3.3.1.min.js", "Scripts/content.js"]
+        "js": ["Scripts/jquery-3.3.1.min.js", "Scripts/utils.js", "Scripts/content.js"]
       },
       {  
         "matches": ["https://rubygems.org/gems/*"],
-        "js": ["Scripts/jquery-3.3.1.min.js", "Scripts/content.js"]
+        "js": ["Scripts/jquery-3.3.1.min.js", "Scripts/utils.js", "Scripts/content.js"]
       },
       {          
        "matches": ["https://packagist.org/packages/*"],
-       "js": ["Scripts/jquery-3.3.1.min.js", "Scripts/content.js"]
+       "js": ["Scripts/jquery-3.3.1.min.js", "Scripts/utils.js", "Scripts/content.js"]
       }                
     ],
   "options_page": "options.html"    

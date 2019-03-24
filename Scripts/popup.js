@@ -1,6 +1,7 @@
 console.log ('popup.js');
-chrome.runtime.onMessage.addListener(gotMessage);
-
+if (typeof chrome !== "undefined"){
+    chrome.runtime.onMessage.addListener(gotMessage);
+}
 
 var messageType = {
     login: "login",  //message to send that we are in the process of logging in
@@ -9,7 +10,7 @@ var messageType = {
     displayMessage: "displayMessage",  //message to send that we have data from REST and wish to display it
     loginFailedMessage: "loginFailedMessage",  //message to send that login failed
     beginevaluate: "beginevaluate",  //message to send that we are beginning the evaluation process, it's different to the evaluatew message for a readon that TODO I fgogot
-    package: "package" //passing a package identifier from content to the background to kick off the eval
+    artifact: "artifact" //passing a artifact/package identifier from content to the background to kick off the eval
 
 };
 const dataSource = {
@@ -197,7 +198,7 @@ function gotMessage(message, sender, sendResponse){
 //             "hash": null, 
 //             "componentIdentifier": 
 //                 {
-//                 "format": package.format,
+//                 "format": artifact.format,
 //                 "coordinates" : 
 //                     {
 //                         "packageId": jqueryData.packageName, 
@@ -306,11 +307,11 @@ function gotMessage(message, sender, sendResponse){
 //     console.log('displayFindings(message)')
 //     console.log(message)
     
-//     if (message !=null  && (message.messageType === 'package' || 1 === 1)){
-//         package = message.message.response;
+//     if (message !=null  && (message.messageType === 'artifact' || 1 === 1)){
+//         artifact = message.message.response;
 
-//         console.log("package");
-//         console.log(package);
+//         console.log("artifact");
+//         console.log(artifact);
                 
 //         //var settings = getSettings(addData);
 //         console.log("message");
@@ -337,7 +338,7 @@ function createHTML(message)
     // const thisComponent = componentDetails["0"];
     // console.log('thisComponent')
     // console.log(thisComponent)
-    switch (message.package.datasource){
+    switch (message.artifact.datasource){
         case dataSource.NEXUSIQ:
             renderComponentData(message);
             renderLicenseData(message);

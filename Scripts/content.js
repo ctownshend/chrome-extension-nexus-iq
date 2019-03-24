@@ -23,7 +23,7 @@ var messageType = {
     displayMessage: "displayMessage",
     loginFailedMessage: "loginFailedMessage",
     beginevaluate: "beginevaluate",
-    package: "package"
+    artifact: "artifact"
 
 };
 function gotMessage(message, sender, sendResponse){
@@ -34,22 +34,19 @@ function gotMessage(message, sender, sendResponse){
     var url  = window.location.href;     
     console.log(url);
     let requestmessage = ParsePage()
-    //{messageType: "package", payload: package};
-    let format = requestmessage.payload.format;
-    let package = requestmessage.payload;
-    
-   
-    // console.log('found');
-    // console.log(found);
-    
+    console.log('requestmessage');
+    console.log(requestmessage);
+    //{messageType: "artifact", payload: artifact};
+    let artifact = requestmessage.payload;
+    console.log('artifact');
+    console.log(artifact);
+    let format = artifact.format;
     let evaluatemessage = {
-        package: package,        
+        artifact: artifact,        
         messagetype: messageType.evaluate
     }
     chrome.runtime.sendMessage(evaluatemessage);
-    // let version = $("h1.package-name-redundant").innerText
-    // console.log("version");
-    // console.log(version);
+
 }
 
 
@@ -58,11 +55,11 @@ function gotMessage(message, sender, sendResponse){
 
 
 function ParsePage(){
-    //returns message in format like this {messageType: "package", payload: package};
-    //package varies depending on eco-system
+    //returns message in format like this {messageType: "artifact", payload: artifact};
+    //artifact varies depending on eco-system
     console.log('ParsePage');
     //who I am what is my address?
-    let package;
+    let artifact;
     let format;
     let datasource = dataSources.NEXUSIQ;;
     let url = location.href; //'https://www.npmjs.com/package/lodash';
@@ -70,14 +67,14 @@ function ParsePage(){
     if (url.search('search.maven.org/artifact/') >=0){
       format = formats.maven;
       datasource = dataSources.NEXUSIQ;
-      package = parseMaven(format, url);
+      artifact = parseMaven(format, url);
 
     }
     //https://mvnrepository.com/artifact/commons-collections/commons-collections/3.2.1
     if (url.search('https://mvnrepository.com/artifact/') >=0){
       format = formats.maven;
       datasource = dataSources.NEXUSIQ;
-      package = parseMaven(format, url);
+      artifact = parseMaven(format, url);
 
     }
 
@@ -85,13 +82,13 @@ function ParsePage(){
       //'https://www.npmjs.com/package/lodash'};
       format = formats.npm;
       datasource = dataSources.NEXUSIQ;
-      package = parseNPM(format, url);
+      artifact = parseNPM(format, url);
     }
     if (url.search('nuget.org/packages/') >=0){
       //https://www.nuget.org/packages/LibGit2Sharp/0.1.0
       format = formats.nuget;
       datasource = dataSources.NEXUSIQ;
-      package =  parseNuget(format, url);
+      artifact =  parseNuget(format, url);
 
     }    
     
@@ -99,7 +96,7 @@ function ParsePage(){
       //https://pypi.org/project/Django/1.6/
       format = formats.pypi;
       datasource = dataSources.NEXUSIQ;
-      package = parsePyPI(format, url);
+      artifact = parsePyPI(format, url);
 
     }
     
@@ -107,7 +104,7 @@ function ParsePage(){
       //https://rubygems.org/gems/bundler/versions/1.16.1
       format = formats.gem;
       datasource = dataSources.NEXUSIQ;
-      package = parseRuby(format, url);
+      artifact = parseRuby(format, url);
 
     }
     
@@ -116,26 +113,25 @@ function ParsePage(){
       //https://rubygems.org/gems/bundler/versions/1.16.1
       format = formats.packagist;
       datasource = dataSources.OSSINDEX;
-      package = parsePackagist(format, url, datasource);
+      artifact = parsePackagist(format, url, datasource);
 
     }
     if (url.search('cocoapods.org/pods/') >=0){
       //https://rubygems.org/gems/bundler/versions/1.16.1
       format = formats.cocoapods;
       datasource = dataSources.OSSINDEX;
-      package = parseCocoaPods(format, url, datasource);
+      artifact = parseCocoaPods(format, url, datasource);
 
     }
 
-    package.datasource = datasource;
+    artifact.datasource = datasource;
     console.log("ParsePage Complete");
-    console.log(package);
+    console.log(artifact);
     //now we write this to background as
     //we pass variables through background
     message = {
-      messagetype: messageType.package, 
-      
-      payload: package
+      messagetype: messageType.artifact,       
+      payload: artifact
     };
     chrome.runtime.sendMessage(message, function(response){
         //sends a message to background handler
