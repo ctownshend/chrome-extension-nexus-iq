@@ -3,6 +3,13 @@ Sonatype Nexus IQ Server scan of a component from a chrome extension
 
 [![DepShield Badge](https://depshield.sonatype.org/badges/ctownshend/chrome-extension-nexus-iq/depshield.svg)](https://depshield.github.io)
 
+[![CircleCI](https://circleci.com/gh/ctownshend/chrome-extension-nexus-iq.svg?style=svg)](https://circleci.com/gh/ctownshend/chrome-extension-nexus-iq)
+
+# Version 1.7.1 - Fixed popup
+* Fixed popup logic bug. 
+* Began adding testing
+
+
 # Version 1.7 - initial release
 Complete rewrite to fix cookie problem with calling Nexus IQ server.
 I have decided the best way to fix the security issues for now is to limit access to http://iq-server:8070. 
