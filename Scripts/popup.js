@@ -1,6 +1,7 @@
 console.log ('popup.js');
 chrome.runtime.onMessage.addListener(gotMessage);
 
+
 var messageType = {
     login: "login",  //message to send that we are in the process of logging in
     evaluate: "evaluate",  //message to send that we are evaluating
@@ -80,13 +81,38 @@ function beginEvaluation(){
         let message = {
             messagetype: messageType.beginevaluate
         }
-        //this sends a message to the content tab
-        //hopefully it will tell me what it sees
-        //this fixes a bug where we did not get the right DOM because we did not know what page we were on
-        chrome.tabs.sendMessage(tabs[0].id, message);
+        let thisTab = tabs[0]
+        let tabId = thisTab.id
+        
+        if (checkPageIsHandled(thisTab)){
+            //this sends a message to the content tab
+            //hopefully it will tell me what it sees
+            //this fixes a bug where we did not get the right DOM because we did not know what page we were on
+            chrome.tabs.sendMessage(tabId, message);
+        }
+        else{
+            alert('This page is not currently handled by this extension.')
+        }
     }
 }
 
+function checkPageIsHandled(tab){
+    console.log("checkPageIsHandled")
+    console.log(tab)
+    //check the url of the tab is in this collection
+    let url = tab.url
+    let found = false
+    if (url.search("https://search.maven.org/") >= 0 ||
+        url.search("https://mvnrepository.com/") >= 0 ||
+        url.search("https://www.npmjs.com/") >= 0 ||
+        url.search("https://www.nuget.org/") >= 0 ||
+        url.search("https://rubygems.org/") >= 0 ||
+        url.search("https://pypi.org/") >= 0 ||
+        url.search("https://packagist.org/") >= 0){
+            found = true;
+        }
+    return found;
+}
 function readyHandler(){
     console.log("popup.js");
     console.log(document);

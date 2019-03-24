@@ -2,7 +2,7 @@
     "name": "Sonatype Nexus IQ Evaluation",
     "description": "Sonatype Nexus IQ Evaluation",
     "author": "Cameron Townshend - cameron.townshend@sonatype.com",
-    "version": "1.8",
+    "version": "1.7.1",
     "manifest_version": 2,
     "permissions": [
       "storage",
@@ -24,7 +24,7 @@
 
       ],
     "background": {
-      "scripts": ["Scripts/jquery-3.3.1.min.js", "Scripts/background.js"],
+      "scripts": ["Scripts/jquery-3.3.1.min.js", "Scripts/shared.js", "Scripts/background.js"],
       "persistent": true
     },
     "page_action": {
