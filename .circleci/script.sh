@@ -34,6 +34,6 @@ cliScanner=$(ls $iqScannerDirectory/*cli*)
 #now we scan with IQScanner
 #./gradlew iqScan $cliScanner, $IQ_SERVER_ADDRESS, $IQ_SERVER_USER_NAME, $IQ_SERVER_PASSWORD
 
-iqscandir='node_modules'
+iqscandir='../node_modules'
 appName=chome-extension-nexus-iq
 java -jar $cliScanner -s $IQ_SERVER_ADDRESS -a ${NEXUS_IQ_USER_NAME}:${NEXUS_IQ_PASSWORD} -i $appName $iqscandir
