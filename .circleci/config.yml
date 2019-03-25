@@ -9,8 +9,8 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/node:10.15.1
-
+      - image: circleci/node:latest
+      # - image: karthikiyengar/node-nightwatch:0.0.1
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
