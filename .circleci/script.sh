@@ -19,8 +19,8 @@ else
    echo "Not Empty"
    rm $iqScannerDirectory/*
 fi
-IQ_CLI_ADDRESS='https://download.sonatype.com/clm/server/latest.tar.gz'
-IQ_SERVER_ADDRESS='http://ec2-54-255-162-59.ap-southeast-1.compute.amazonaws.com:8070/'
+IQ_CLI_ADDRESS=${IQ_CLI_ADDRESS}
+IQ_SERVER_ADDRESS=${IQ_SERVER_ADDRESS}
 
 wget -q $IQ_CLI_ADDRESS -P $iqScannerDirectory
 
@@ -34,6 +34,6 @@ cliScanner=$(ls $iqScannerDirectory/*cli*)
 #now we scan with IQScanner
 #./gradlew iqScan $cliScanner, $IQ_SERVER_ADDRESS, $IQ_SERVER_USER_NAME, $IQ_SERVER_PASSWORD
 
-iqscandir='../node_modules'
+iqscandir='/home/circleci/node_modules'
 appName=chome-extension-nexus-iq
 java -jar $cliScanner -s $IQ_SERVER_ADDRESS -a ${NEXUS_IQ_USER_NAME}:${NEXUS_IQ_PASSWORD} -i $appName $iqscandir
