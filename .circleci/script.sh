@@ -19,8 +19,8 @@ else
    echo "Not Empty"
    rm $iqScannerDirectory/*
 fi
-IQ_CLI_ADDRESS = 'https://download.sonatype.com/clm/server/latest.tar.gz'
-IQ_SERVER_ADDRESS = 'http://ec2-54-255-162-59.ap-southeast-1.compute.amazonaws.com:8070/'
+IQ_CLI_ADDRESS='https://download.sonatype.com/clm/server/latest.tar.gz'
+IQ_SERVER_ADDRESS='http://ec2-54-255-162-59.ap-southeast-1.compute.amazonaws.com:8070/'
 
 wget -q $IQ_CLI_ADDRESS -P $iqScannerDirectory
 
