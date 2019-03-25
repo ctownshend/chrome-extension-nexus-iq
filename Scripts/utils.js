@@ -1,3 +1,4 @@
+console.log('utils.js');
 
 var formats = {
     maven: "maven",
@@ -6,7 +7,10 @@ var formats = {
     gem: "gem",
     pypi: "pypi",
     packagist: "packagist",
-    cocoapods: "cocoapods"
+    cocoapods: "cocoapods",
+    cran: "cran",
+    crates: "crates",
+    golang: "golang"
 }
   
 
@@ -27,6 +31,7 @@ var messageTypes = {
 };
 
 
+
 function checkPageIsHandled(url){
     console.log("checkPageIsHandled")
     console.log(url)
@@ -39,7 +44,12 @@ function checkPageIsHandled(url){
         url.search("https://www.nuget.org/") >= 0 ||
         url.search("https://rubygems.org/") >= 0 ||
         url.search("https://pypi.org/") >= 0 ||
-        url.search("https://packagist.org/") >= 0){
+        url.search("https://packagist.org/") >= 0 ||
+        url.search("https://cran.r-project.org/") >= 0 ||
+        url.search("https://crates.io/") >= 0 ||
+        url.search("https://gocenter.jfrog.com/") >= 0        
+        ) 
+        {
             found = true;
         }
     return found;
@@ -65,6 +75,7 @@ function BuildEmptySettings(){
 
 function removeCookies(settings_url){
     console.log('removeCookies')
+    console.log(settings_url)
     //settings.url = http://iq-server:8070/
     let leftPart = settings_url.search('//')+2;
     let server = settings_url.substring(leftPart);
@@ -196,7 +207,6 @@ function NexusFormatRuby(artifact){
   }
 	return componentDict
 };
-
 
 
 

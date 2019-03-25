@@ -20,6 +20,9 @@
       "https://rubygems.org/",
       "https://pypi.org/",
       "https://packagist.org/",
+      "https://cran.r-project.org/",
+      "https://crates.io/",
+      "https://gocenter.jfrog.com/",
       "https://ossindex.sonatype.org/"
 
       ],
@@ -71,8 +74,23 @@
       {          
        "matches": ["https://packagist.org/packages/*"],
        "js": ["Scripts/jquery-3.3.1.min.js", "Scripts/utils.js", "Scripts/content.js"]
-      }                
+      },
+      {          
+        "matches": ["https://cran.r-project.org/*"],
+        "js": ["Scripts/jquery-3.3.1.min.js", "Scripts/utils.js", "Scripts/content.js"]
+       },
+       {          
+        "matches": ["https://crates.io/crates/*"],
+        "js": ["Scripts/jquery-3.3.1.min.js", "Scripts/utils.js", "Scripts/content.js"]
+       },
+       {          
+        "matches": ["https://gocenter.jfrog.com/github.com*"],
+        "js": ["Scripts/jquery-3.3.1.min.js", "Scripts/utils.js", "Scripts/content.js"]
+       }       
     ],
+
+
+    
   "options_page": "options.html"    
   }
   

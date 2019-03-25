@@ -70,6 +70,7 @@ $(function () {
 
 
 function beginEvaluation(){
+    console.log('beginEvaluation');
     //need to run query across the tabs
     //to determine the top tab.
     //I need to call sendMessage from within there as it is async
@@ -190,9 +191,9 @@ function createHTML(message)
 function renderComponentDataOSSIndex(message){
     console.log('renderComponentData');
     console.log(message);
-    $("#format").html(message.package.format);
-    $("#package").html(message.package.name);
-    $("#version").html(message.package.version);
+    $("#format").html(message.artifact.format);
+    $("#package").html(message.artifact.name);
+    $("#version").html(message.artifact.version);
 
     $("#hash").html(message.message.response.coordinates);
     

@@ -65,6 +65,7 @@ function ParsePage(){
     let datasource = dataSources.NEXUSIQ;;
     let url = location.href; //'https://www.npmjs.com/package/lodash';
     console.log(url);
+
     if (url.search('search.maven.org/artifact/') >=0){
       format = formats.maven;
       datasource = dataSources.NEXUSIQ;
@@ -109,21 +110,41 @@ function ParsePage(){
 
     }
     
-    //OSSIndex    
+    //OSSIndex
     if (url.search('packagist.org/packages/') >=0){
-      //https://rubygems.org/gems/bundler/versions/1.16.1
+      //https: packagist ???
       format = formats.packagist;
       datasource = dataSources.OSSINDEX;
       artifact = parsePackagist(format, url, datasource);
 
     }
     if (url.search('cocoapods.org/pods/') >=0){
-      //https://rubygems.org/gems/bundler/versions/1.16.1
+      //https:// cocoapods ???
       format = formats.cocoapods;
       datasource = dataSources.OSSINDEX;
       artifact = parseCocoaPods(format, url, datasource);
 
     }
+    if (url.search('cran.r-project.org/') >=0){
+      
+      format = formats.cran;
+      datasource = dataSources.OSSINDEX;
+      artifact = parseCRAN(format, url, datasource);
+    }
+    
+    if (url.search('https://crates.io/crates/') >=0){      
+      format = formats.crates;
+      datasource = dataSources.OSSINDEX;
+      artifact = parseCrates(format, url, datasource);
+    }
+    if (url.search('https://gocenter.jfrog.com/') >=0){      
+      format = formats.golang;
+      datasource = dataSources.OSSINDEX;
+      artifact = parseGoLang(format, url, datasource);
+    }
+
+    
+
 
     artifact.datasource = datasource;
     console.log("ParsePage Complete");
@@ -278,7 +299,7 @@ function parseRuby(format, url) {
 ///////////////////////END PASTED
 
 
-
+///OSSIndex////
 function parsePackagist(format, url, datasource) {
   //server is packagist, format is composer
   console.log('parsePackagist:' +  url);
@@ -311,23 +332,142 @@ function parsePackagist(format, url, datasource) {
   }
 }
 
-  function parseCocoaPods(format, url, datasource) {
-    console.log('parseCocoaPods');
-    var elements = url.split('/')
-    //https://cocoapods.org/pods/TestFairy
-    name = elements[4];
-    //#headline > div > h1 > span
-    versionHTML = $("H1 span").first().text()
-    console.log('versionHTML');
-    console.log(versionHTML);
-    version=versionHTML.trim();
+function parseCocoaPods(format, url, datasource) {
+  console.log('parseCocoaPods');
+  var elements = url.split('/')
+  //https://cocoapods.org/pods/TestFairy
+  name = elements[4];
+  //#headline > div > h1 > span
+  versionHTML = $("H1 span").first().text()
+  console.log('versionHTML');
+  console.log(versionHTML);
+  version=versionHTML.trim();
 
-    name = encodeURIComponent(name);
-    version = encodeURIComponent(version);
-    return {
-      format: format, 
-      datasource: datasource,
-      name: name, 
-      version: version
+  name = encodeURIComponent(name);
+  version = encodeURIComponent(version);
+  return {
+    format: format, 
+    datasource: datasource,
+    name: name, 
+    version: version
+  }
+}
+
+
+function parseCRAN(format, url, datasource) {
+  //https://ossindex.sonatype.org/api/v3/component-report/cran%3AA3%400.0.1
+  //server is CRAN, format is CRAN
+  //https://cran.r-project.org/
+  // https://cran.r-project.org/web/packages/latte/index.html
+  //https://cran.r-project.org/package=clustcurv
+
+  console.log('parseCRAN:' +  url);
+  let elements = url.split('/')
+  //CRAN may have the packagename in the URL
+  //but not the version in URL
+  //could also be just in the body
+  let name
+  if (elements.length>5){
+    //has packagename in 5
+    name = elements[5]
+  }
+  else if(elements.length>3){
+    const pckg = "package="
+    name = elements[3]
+    if (name.search(pckg) >= 0){
+      name = name.substr(pckg.length)
     }
   }
+  else {
+    name = $("h2").text()
+    if (name.search(":") >= 0){      
+      name = name.substring(0, name.search(":"))
+    }
+  }
+ 
+  versionHTML = $('table tr:nth-child(1) td:nth-child(2)').first().text()
+  console.log('versionHTML');
+  console.log(versionHTML);
+  version=versionHTML.trim();
+  name = encodeURIComponent(name);
+  version = encodeURIComponent(version);
+  return {
+    format: format, 
+    datasource: datasource,
+    name: name, 
+    version: version
+  }
+}
+
+
+function parseGoLang(format, url, datasource) {
+  //server is non-defined, language is go/golang
+  //index of github stored at jfrog
+  //https://gocenter.jfrog.com/github.com~2Fhansrodtang~2Frandomcolor/versions
+  // pkg:golang/github.com/etcd-io/etcd@3.3.1
+  // pkg:github/etcd-io/etcd@3.3.1
+  console.log('parseGolang:' +  url);
+  let elements = url.split('/')
+  //CRAN may have the packagename in the URL
+  //but not the version in URL
+  //could also be just in the body
+  let name
+  let namespace
+  let type
+  if (url.search('gocenter.jfrog.com')>=0){
+    //has packagename in 5
+    let fullname = elements[3]
+    //"github.com~2Fhansrodtang~2Frandomcolor"
+    let nameElements = fullname.split('~2F')
+    // 0: "github.com"
+    // 1: "hansrodtang"
+    // 2: "randomcolor"
+    type = 'github'
+    namespace = nameElements[1]
+    name = nameElements[2]
+  }
+ 
+  versionHTML = $("span.version-name").text()
+  console.log('versionHTML');
+  console.log(versionHTML);
+  version=versionHTML.trim();
+  name = encodeURIComponent(name);
+  version = encodeURIComponent(version);
+  return {
+    format: format, 
+    datasource: datasource,
+    type: type,
+    namespace: namespace,
+    name: name, 
+    version: version
+  }
+}
+
+function parseCrates(format, url, datasource) {
+  //server is crates, language is rust
+  //https://crates.io/crates/rand
+
+  console.log('parseCrates:' +  url);
+  let elements = url.split('/')
+  //CRAN may have the packagename in the URL
+  //but not the version in URL
+  //could also be just in the body
+  let name
+  if (elements.length==5){
+    //has packagename in 5
+    name = elements[4]
+  }
+ 
+  versionHTML = $("div.info h2").text()
+  console.log('versionHTML');
+  console.log(versionHTML);
+  version=versionHTML.trim();
+  name = encodeURIComponent(name);
+  version = encodeURIComponent(version);
+  return {
+    format: format, 
+    datasource: datasource,
+    name: name, 
+    version: version
+  }
+}

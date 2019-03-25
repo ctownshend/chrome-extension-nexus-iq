@@ -180,12 +180,12 @@ function evaluate(artifact, settings){
     console.log('evaluate');
     console.log(artifact)
     console.log(settings)
-    removeCookies(settings);
 
     // console.log(artifact.datasource)
     switch(artifact.datasource) {
         case dataSources.NEXUSIQ:
-            resp = callIQ(artifact, settings);
+        removeCookies(settings.url);
+        resp = callIQ(artifact, settings);
             break;
         case dataSources.OSSINDEX:
           resp = addDataOSSIndex(artifact, settings);
@@ -453,7 +453,13 @@ retVal = {error: 1002, response: "Unspecified error"};
 var format = artifact.format;
 var name = artifact.name;
 var version = artifact.version;
-var OSSIndexURL= "https://ossindex.sonatype.org/api/v3/component-report/" + format + '%3A'+ name + '%40' + version
+var OSSIndexURL 
+if(artifact.format == formats.golang){
+    //Example: pkg:github/etcd-io/etcd@3.3.1
+    OSSIndexURL = "https://ossindex.sonatype.org/api/v3/component-report/" + artifact.type + '%3A' + artifact.namespace + '%3A'+ artifact.name + '%40' + artifact.version
+}else{
+    OSSIndexURL= "https://ossindex.sonatype.org/api/v3/component-report/" + format + '%3A'+ name + '%40' + version
+}
 var status = false;
 //components[""0""].componentIdentifier.coordinates.packageId
 console.log('settings');
@@ -605,7 +611,23 @@ chrome.runtime.onInstalled.addListener(function() {
             pageUrl: {hostEquals: 'cocoapods.org', 
                       schemes: ['https'],
                       pathContains: "pods"}, 
-          })  
+          }),          
+          new chrome.declarativeContent.PageStateMatcher({
+            pageUrl: {hostEquals: 'cran.r-project.org', 
+                      schemes: ['https']}, 
+          }),
+          new chrome.declarativeContent.PageStateMatcher({
+            pageUrl: {hostEquals: 'crates.io', 
+                      schemes: ['https'],
+                      pathContains: "crates"
+                    }
+          }),
+          new chrome.declarativeContent.PageStateMatcher({
+            pageUrl: {hostEquals: 'gocenter.jfrog.com', 
+                      schemes: ['https'],
+                      pathContains: "github.com"
+                    }
+          })                                                        
         ],
             actions: [new chrome.declarativeContent.ShowPageAction()]
       }]);

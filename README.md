@@ -5,6 +5,23 @@ Sonatype Nexus IQ Server scan of a component from a chrome extension
 
 [![CircleCI](https://circleci.com/gh/ctownshend/chrome-extension-nexus-iq.svg?style=svg)](https://circleci.com/gh/ctownshend/chrome-extension-nexus-iq)
 
+# Version 1.7.2-added new formats
+* added new formats
+* Fixed various bugs
+* Added unit tests
+
+## Formats/package manager pages supported as of 1.7.2
+* Java - maven - https://search.maven.org/
+* Java - maven - https://mvnrepository.com/
+* JS/Node - npm - https://www.npmjs.com/
+* .Net - nuget - https://www.nuget.org/
+* Ruby - rubygems - https://rubygems.org/
+* Python - pypi - https://pypi.org/
+* php - packagist/composer/ -  https://packagist.org/
+* R - CRAN -  https://cran.r-project.org/
+* Rust - Crates-  https://crates.io/
+* Golang - Go - https://gocenter.jfrog.com/
+
 # Version 1.7.1 - Fixed popup
 * Fixed popup logic bug. 
 * Began adding testing
