@@ -36,4 +36,4 @@ cliScanner=$(ls $iqScannerDirectory/*cli*)
 
 iqscandir='node_modules'
 appName=chome-extension-nexus-iq
-java -jar $cliScanner -s $IQ_SERVER_ADDRESS -a admin:12345 -i $appName $iqscandir
+java -jar $cliScanner -s $IQ_SERVER_ADDRESS -a ${NEXUS_IQ_USER_NAME}:${NEXUS_IQ_PASSWORD} -i $appName $iqscandir

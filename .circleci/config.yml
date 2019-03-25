@@ -42,6 +42,8 @@ jobs:
           name: nexus Vulnerabilithy scan
           command: |            
             ls -ald */
-            ls -als
+            which java
+            echo $PATH
+            echo $JAVA_HOME
             chmod 777 .circleci/script.sh
             bash .circleci/script.sh
