@@ -52,8 +52,8 @@ jobs:
       - image: circleci/openjdk:8u181
     steps:
       - attach_workspace:
-        # Must be absolute path or relative path from working_directory
-        at: /tmp/workspace      
+          # Must be absolute path or relative path from working_directory
+          at: /tmp/workspace      
       - checkout
       
       - run:
