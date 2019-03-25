@@ -2,10 +2,8 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
-version: 2
+version: 2.1
 jobs:
-  
-            
   build:
     docker:
       # specify the version you desire here
@@ -37,13 +35,15 @@ jobs:
 
       # run tests!
       - run: npm test
-
-      - run:
-          name: nexus Vulnerabilithy scan
-          command: |            
-            ls -ald */
-            which java
-            echo $PATH
-            echo $JAVA_HOME
-            chmod 777 .circleci/script.sh
-            bash .circleci/script.sh
+  test:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - checkout
+      - run: npm test  
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test
