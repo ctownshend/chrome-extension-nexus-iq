@@ -139,11 +139,13 @@ function login(settings){
             retVal = {error: xhr.status !== 200, response: xhr.responseText};
             // return
             // let retval = evaluate(artifact, settings);
-            console.log(retVal);
+            
             if (retVal.error){
-                console.log('we got some error');
+                console.log('WebRequest error');
+                console.log(retval);
             }else{
                 console.log('happy days');
+                console.log(retVal);
             }
             let loggedInMessage = {
                 messagetype: messageTypes.loggedIn,
@@ -188,7 +190,7 @@ function evaluate(artifact, settings){
         resp = callIQ(artifact, settings);
             break;
         case dataSources.OSSINDEX:
-          resp = addDataOSSIndex(artifact, settings);
+          resp = addDataOSSIndex(artifact);
           break;
         default:
           alert('Unhandled datasource' + artifact.datasource);
@@ -409,31 +411,7 @@ function getActiveTab(){
 function ToggleIcon(tab){
     console.log('ToggleIcon');
     console.log(tab);
-    let found = false;
-    if (tab.url.indexOf('https://search.maven.org/artifact/') == 0) {
-        // ... show the page action.
-        found = true;
-    }
-    if (tab.url.indexOf('https://mvnrepository.com/artifact/') == 0) {
-        // ... show the page action.
-        found = true;
-    }
-    if (tab.url.indexOf('https://www.npmjs.com/package/') == 0) {
-        // ... show the page action.
-        found = true;
-    }
-    if (tab.url.indexOf('https://www.nuget.org/packages/') == 0) {
-        // ... show the page action.
-        found = true;
-    }
-    if (tab.url.indexOf('https://pypi.org/project/') == 0) {
-        // ... show the page action.
-        found = true;
-    }
-    if (tab.url.indexOf('https://rubygems.org/gems/') == 0) {
-        // ... show the page action.
-        found = true;
-    }
+    let found = checkPageIsHandled(tab.url)
 
     if (found){
         chrome.pageAction.show(tab.id);        
@@ -443,41 +421,42 @@ function ToggleIcon(tab){
     console.log(found);
 }
 
-function addDataOSSIndex( artifact, settings){// pass your data in method
-//OSSINdex is anonymous
-console.log('entering addDataOSSIndex');
-var retVal; //return object including status
-retVal = {error: 1002, response: "Unspecified error"};
-// https://ossindex.sonatype.org/api/v3/component-report/composer%3Adrupal%2Fdrupal%405
-//type:namespace/name@version?qualifiers#subpath 
-var format = artifact.format;
-var name = artifact.name;
-var version = artifact.version;
-var OSSIndexURL 
-if(artifact.format == formats.golang){
-    //Example: pkg:github/etcd-io/etcd@3.3.1
-    OSSIndexURL = "https://ossindex.sonatype.org/api/v3/component-report/" + artifact.type + '%3A' + artifact.namespace + '%3A'+ artifact.name + '%40' + artifact.version
-}else{
-    OSSIndexURL= "https://ossindex.sonatype.org/api/v3/component-report/" + format + '%3A'+ name + '%40' + version
-}
-var status = false;
-//components[""0""].componentIdentifier.coordinates.packageId
-console.log('settings');
-console.log(settings);
-console.log(settings.auth);
-console.log("inputdata");
-console.log(artifact);
-console.log("OSSIndexURL");
-console.log(OSSIndexURL);
-inputStr=JSON.stringify(artifact);
+function addDataOSSIndex( artifact){// pass your data in method
+    //OSSINdex is anonymous
+    console.log('entering addDataOSSIndex');
+    let retVal;
+    // https://ossindex.sonatype.org/api/v3/component-report/composer%3Adrupal%2Fdrupal%405
+    //type:namespace/name@version?qualifiers#subpath 
+    let format = artifact.format;
+    let name = artifact.name;
+    let version = artifact.version;
+    let OSSIndexURL 
+    if(artifact.format == formats.golang){
+        //Example: pkg:github/etcd-io/etcd@3.3.1
+        OSSIndexURL = "https://ossindex.sonatype.org/api/v3/component-report/" + artifact.type + '%3A' + artifact.namespace + '%3A'+ artifact.name + '%40' + artifact.version
+    }else{
+        OSSIndexURL= "https://ossindex.sonatype.org/api/v3/component-report/" + format + '%3A'+ name + '%40' + version
+    }
+    let status = false;
+    //components[""0""].componentIdentifier.coordinates.packageId
+    // console.log('settings');
+    // console.log(settings);
+    // console.log(settings.auth);
+    // console.log("inputdata");
+    console.log(artifact);
+    console.log("OSSIndexURL");
+    console.log(OSSIndexURL);
+    inputStr=JSON.stringify(artifact);
 
-    
-if (!settings.baseURL){
-    retVal = {error: 1001, response: "Problem retrieving URL"};
-    console.log('no base url');
-    return (retVal);
-}
-$.ajax({            
+        
+    // if (!settings.baseURL){
+    //     retVal = {error: 1001, response: "Problem retrieving URL"};
+    //     console.log('no base url');
+    //     return (retVal);
+    // }
+    let displayMessage;
+
+    $.ajax({            
         type: "GET",
         // beforeSend: function (request)
         // {
@@ -499,12 +478,12 @@ $.ajax({
             //return (retVal);
             //handleResponseData(responseData);
             //alert("success");// write success in " "
-            let displayMessage = {
+            displayMessage = {                
                 messagetype: messageTypes.displayMessage,
-                message: retVal,
-                artifact: artifact
+                artifact: artifact,            
+                message: retVal                
             }
-            console.log('sendmessage');
+            console.log('sendmessage displayMessage');
             console.log(displayMessage);
             chrome.runtime.sendMessage(displayMessage);
             return(retVal);
@@ -512,33 +491,43 @@ $.ajax({
 
         error: function (jqXHR, status) {
             // error handler
-            console.log('some error');
+            console.log('$.ajax get error');
             console.log(jqXHR);
             //console.log(jqXHR.responseText  + jqXHR.responseText + jqXHR.status);
             //alert('fail' + jqXHR.responseText  + '\r\n' + jqXHR.statusText + '\r\n' + 'Code:' +  jqXHR.status);
-            retVal={error: 500, response: jqXHR};
+            let error = jqXHR.status;
+            let timeout = (jqXHR.statusText === 'timeout' && error === 0);
+            if (timeout){
+                error =  true;
+            }
+            retVal={error: error, response: jqXHR};
+            displayMessage = {                
+                messagetype: messageTypes.displayMessage,
+                artifact: artifact,            
+                message: retVal                
+            }
+            chrome.runtime.sendMessage(displayMessage);
             return (retVal);
         },
         timeout: 3000 // sets timeout to 3 seconds
     });
 
-if(retVal.error == 0){
-    let componentInfoData = retVal;
-    console.log('retVal');
-    console.log(retVal);
-    var componentDetail = componentInfoData.response;
-    console.log("componentInfoData");
-    console.log(componentDetail);
-    
-    
-}else{
-    //an error
-    console.log('an eror occurred, show the response')
-    // $("#error").html(retVal.response.statusText);
-    // $("#error").show(1000);
-}
-// window.responsedata = retVal;
-return retVal;
+    // if(retVal.error === 0){
+    //     let componentInfoData = retVal;
+    //     console.log('retVal');
+    //     console.log(retVal);
+    //     var componentDetail = componentInfoData.response;
+    //     console.log("componentInfoData");
+    //     console.log(componentDetail);        
+    // }else{
+    //     //an error
+    //     console.log('an eror occurred, show the response')
+    //     console.log(retVal);
+    //     // $("#error").html(retVal.response.statusText);
+    //     // $("#error").show(1000);
+    // }
+    // // window.responsedata = retVal;
+    // return retVal;
 };
  
 
@@ -557,8 +546,14 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
     console.log(activeInfo.tabId);
 });
 
+
 chrome.runtime.onInstalled.addListener(function() {
     // loadSettings();
+    // if (checkPageIsHandled(url)){
+    //     browser.browserAction.enable();
+    // }else{
+    //     browser.browserAction.disable();
+    // }
     // return;
     console.log('chrome.runtime.onInstalled.addListener')
     chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {

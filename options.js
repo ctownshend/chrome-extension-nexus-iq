@@ -10,9 +10,9 @@ window.onload = function(){
       var url = document.getElementById('url').value;
       var username = document.getElementById('username').value;
       var password = document.getElementById('password').value;
-      console.log(url);
-      console.log(username);
-      console.log(password);
+      // console.log(url);
+      // console.log(username);
+      // console.log(password);
       
       //alert(value);
       chrome.storage.sync.set({'url':url}, function(){
@@ -26,6 +26,7 @@ window.onload = function(){
       });
       var ok = true;
       if(ok){
+        alert('saved values');
         window.close();
       }
 
@@ -37,15 +38,22 @@ window.onload = function(){
 function load_data(){
   console.log('load_data');
   chrome.storage.sync.get('url', function(data){
-    document.getElementById("url").value = data.url;    
+    if(typeof data.url !== "undefined"){
+      document.getElementById("url").value = data.url;    
+    }
     console.log(data.url);
   });
   chrome.storage.sync.get('username', function(data){
-    document.getElementById("username").value = data.username;
+    if(typeof data.username !== "undefined"){
+      document.getElementById("username").value = data.username;
+    }
     console.log(data.username);
+
   })
   chrome.storage.sync.get('password', function(data){
-    document.getElementById("password").value = data.password;
+    if(typeof data.password !== "undefined"){
+      document.getElementById("password").value = data.password;
+    }
     console.log(data.password);
   });
 };

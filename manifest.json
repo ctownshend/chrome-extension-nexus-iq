@@ -10,9 +10,9 @@
       "webRequest",
       "webRequestBlocking", 
       "cookies", 
-      "*://iq-server:*/",
       "background",
       "tabs", 
+      "activeTab",
       "https://search.maven.org/",
       "https://mvnrepository.com/",
       "https://www.npmjs.com/",
@@ -23,7 +23,8 @@
       "https://cran.r-project.org/",
       "https://crates.io/",
       "https://gocenter.jfrog.com/",
-      "https://ossindex.sonatype.org/"
+      "https://ossindex.sonatype.org/",
+      "*://*/*"
 
       ],
     "background": {

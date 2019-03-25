@@ -34,20 +34,25 @@ function gotMessage(message, sender, sendResponse){
     console.log("url");
     var url  = window.location.href;     
     console.log(url);
-    let requestmessage = ParsePage()
-    console.log('requestmessage');
-    console.log(requestmessage);
-    //{messageType: "artifact", payload: artifact};
-    let artifact = requestmessage.payload;
-    console.log('artifact');
-    console.log(artifact);
-    let format = artifact.format;
-    let evaluatemessage = {
-        artifact: artifact,        
-        messagetype: messageTypes.evaluate
+    //this page will hear the Evaluate message as well, so ignore it
+    if (message.messagetype !== messageTypes.evaluate){
+      let requestmessage = ParsePage()
+      console.log('requestmessage');
+      console.log(requestmessage);
+      //{messageType: "artifact", payload: artifact};
+      let artifact = requestmessage.payload;
+      console.log('artifact');
+      console.log(artifact);
+      let format = artifact.format;
+      let evaluatemessage = {
+          artifact: artifact,        
+          messagetype: messageTypes.evaluate
+      }
+      console.log('chrome.runtime.sendMessage(evaluatemessage)');
+      console.log(evaluatemessage);
+      
+      chrome.runtime.sendMessage(evaluatemessage);
     }
-    chrome.runtime.sendMessage(evaluatemessage);
-
 }
 
 
