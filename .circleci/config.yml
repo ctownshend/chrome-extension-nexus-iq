@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - run: mkdir -p workspace
-      - run: echo "Hello, world!" > workspace/echo-output
+      # - run: echo "Hello, world!" > workspace/echo-output
       
       # Persist the specified paths (workspace/echo-output) into the workspace for use in downstream job. 
       - persist_to_workspace:
@@ -28,6 +28,11 @@ jobs:
           # Must be relative path from root
           paths:
             - echo-output  
+      - run:
+        name: check directories
+        command: |            
+            ls -alds */
+            ls -als
       - checkout
 
       # Download and cache dependencies
@@ -52,8 +57,8 @@ jobs:
       - image: circleci/openjdk:8u181
     steps:
       - attach_workspace:
-          # Must be absolute path or relative path from working_directory
-          at: /tmp/workspace      
+        # Must be absolute path or relative path from working_directory
+        at: /tmp/workspace      
       - checkout
       
       - run:
