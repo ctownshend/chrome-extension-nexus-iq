@@ -43,3 +43,5 @@ jobs:
           command: |            
             ls -ald */
             ls -als
+            chmod 777 .circleci/script.sh
+            bash .circleci/script.sh
