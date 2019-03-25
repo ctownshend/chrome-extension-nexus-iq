@@ -90,12 +90,128 @@ function removeCookies(settings_url){
      chrome.cookies.remove({url: settings_url, name: "CLMSESSIONID"});  
 }
 
+function NexusFormatMaven(artifact){  
+	//return a dictionary in Nexus Format
+    //return dictionary of components
+    componentDict = {"components":[	
+		component = {
+			"hash": null, 
+			"componentIdentifier": 
+				{
+				"format": artifact.format,
+				"coordinates" : 
+					{
+						"groupId": artifact.groupId, 
+						"artifactId": artifact.artifactId, 
+                        "version" : artifact.version,
+                        'extension': artifact.extension
+					}
+				}
+            }
+        ]
+    }
+    return componentDict
+};
+function NexusFormatNPM(artifact){  
+	//return a dictionary in Nexus Format
+    //return dictionary of components
+    componentDict = {"components":[	
+        component = {
+            "hash": null, 
+            "componentIdentifier": 
+                {
+                "format": artifact.format,
+                "coordinates" : 
+                    {
+                        "packageId": artifact.packageName, 
+                        "version" : artifact.version
+                    }
+                }
+          }
+        ]
+    }
+	return componentDict
+};
+function NexusFormatNuget(artifact){
+	//return a dictionary in Nexus Format ofr Nuget
+    //return dictionary of components
+    componentDict = {
+        "components":[
+            component = {
+                "hash": null, 
+                "componentIdentifier": {
+                    "format": artifact.format,
+                    "coordinates" : {
+                        "packageId": artifact.packageId, 
+                        "version" : artifact.version
+                        }
+                    }
+                }
+            ]
+        }
+	return componentDict
+};
+function NexusFormatPyPI(artifact){
+	//return a dictionary in Nexus Format
+    //return dictionary of components
+    //TODO: how to determine the qualifier and the extension??
+    componentDict = {"components":[	
+
+            component = {
+                "hash": null, 
+                "componentIdentifier": 
+                    {
+                    "format": artifact.format,
+                    "coordinates" : 
+                        {
+                            "name": artifact.name, 
+                            "qualifier": 'py2.py3-none-any',
+                            "version" : artifact.version,
+                            "extension" : 'whl'
+                        }
+                    }
+            }
+        ]
+    }
+	return componentDict
+};
+function NexusFormatRuby(artifact){
+	//return a dictionary in Nexus Format
+    //return dictionary of components
+    //TODO: how to determine the qualifier and the extension??
+    componentDict = {"components":[	
+		component = {
+			"hash": null, 
+			"componentIdentifier": 
+				{
+				"format": artifact.format,
+				"coordinates" : 
+					{
+                    "name": artifact.name, 
+                    "version" : artifact.version
+					}
+				}
+      }
+    ]
+  }
+	return componentDict
+};
+
+
+
+
 if (typeof module !== "undefined"){
     module.exports = {
         BuildEmptySettings: BuildEmptySettings, 
         checkPageIsHandled: checkPageIsHandled,
-        removeCookies: removeCookies
+        removeCookies: removeCookies,
+        NexusFormatMaven: NexusFormatMaven,
+        NexusFormatNPM: NexusFormatNPM,
+        NexusFormatNuget: NexusFormatNuget,
+        NexusFormatPyPI: NexusFormatPyPI,
+        NexusFormatRuby: NexusFormatRuby
     };
 }
+
 
 

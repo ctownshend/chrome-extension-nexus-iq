@@ -405,116 +405,6 @@ function getActiveTab(){
 //     return settings;
 // };
 
-function NexusFormatNPM(artifact){  
-	//return a dictionary in Nexus Format
-    //return dictionary of components
-    componentDict = {"components":[	
-        component = {
-            "hash": null, 
-            "componentIdentifier": 
-                {
-                "format": artifact.format,
-                "coordinates" : 
-                    {
-                        "packageId": artifact.packageName, 
-                        "version" : artifact.version
-                    }
-                }
-          }
-        ]
-    }
-	return componentDict
-};
-
-function NexusFormatNuget(artifact){
-	//return a dictionary in Nexus Format ofr Nuget
-    //return dictionary of components
-    componentDict = {
-        "components":[
-            component = {
-                "hash": null, 
-                "componentIdentifier": {
-                    "format": artifact.format,
-                    "coordinates" : {
-                        "packageId": artifact.packageId, 
-                        "version" : artifact.version
-                        }
-                    }
-                }
-            ]
-        }
-	return componentDict
-}
-
-function NexusFormatRuby(artifact){
-	//return a dictionary in Nexus Format
-    //return dictionary of components
-    //TODO: how to determine the qualifier and the extension??
-    componentDict = {"components":[	
-		component = {
-			"hash": null, 
-			"componentIdentifier": 
-				{
-				"format": artifact.format,
-				"coordinates" : 
-					{
-                    "name": artifact.name, 
-                    "version" : artifact.version
-					}
-				}
-      }
-    ]
-  }
-	return componentDict
-}
-
-function NexusFormatPyPI(artifact){
-	//return a dictionary in Nexus Format
-    //return dictionary of components
-    //TODO: how to determine the qualifier and the extension??
-    componentDict = {"components":[	
-
-            component = {
-                "hash": null, 
-                "componentIdentifier": 
-                    {
-                    "format": artifact.format,
-                    "coordinates" : 
-                        {
-                            "name": artifact.name, 
-                            "qualifier": 'py2.py3-none-any',
-                            "version" : artifact.version,
-                            "extension" : 'whl'
-                        }
-                    }
-            }
-        ]
-    }
-	return componentDict
-}
-
-function NexusFormatMaven(artifact){  
-	//return a dictionary in Nexus Format
-    //return dictionary of components
-    componentDict = {"components":[	
-		component = {
-			"hash": null, 
-			"componentIdentifier": 
-				{
-				"format": artifact.format,
-				"coordinates" : 
-					{
-						"groupId": artifact.groupId, 
-						"artifactId": artifact.artifactId, 
-                        "version" : artifact.version,
-                        'extension': artifact.extension
-					}
-				}
-      }
-    ]
-  }
-	return componentDict
-}
 
 function ToggleIcon(tab){
     console.log('ToggleIcon');
@@ -553,97 +443,97 @@ function ToggleIcon(tab){
     console.log(found);
 }
 
-  function addDataOSSIndex( artifact, settings){// pass your data in method
-    //OSSINdex is anonymous
-    console.log('entering addDataOSSIndex');
-    var retVal; //return object including status
-    retVal = {error: 1002, response: "Unspecified error"};
-    // https://ossindex.sonatype.org/api/v3/component-report/composer%3Adrupal%2Fdrupal%405
-    //type:namespace/name@version?qualifiers#subpath 
-    var format = artifact.format;
-    var name = artifact.name;
-    var version = artifact.version;
-    var OSSIndexURL= "https://ossindex.sonatype.org/api/v3/component-report/" + format + '%3A'+ name + '%40' + version
-    var status = false;
-    //components[""0""].componentIdentifier.coordinates.packageId
-    console.log('settings');
-    console.log(settings);
-    console.log(settings.auth);
-    console.log("inputdata");
-    console.log(artifact);
-    console.log("OSSIndexURL");
-    console.log(OSSIndexURL);
-    inputStr=JSON.stringify(artifact);
-  
+function addDataOSSIndex( artifact, settings){// pass your data in method
+//OSSINdex is anonymous
+console.log('entering addDataOSSIndex');
+var retVal; //return object including status
+retVal = {error: 1002, response: "Unspecified error"};
+// https://ossindex.sonatype.org/api/v3/component-report/composer%3Adrupal%2Fdrupal%405
+//type:namespace/name@version?qualifiers#subpath 
+var format = artifact.format;
+var name = artifact.name;
+var version = artifact.version;
+var OSSIndexURL= "https://ossindex.sonatype.org/api/v3/component-report/" + format + '%3A'+ name + '%40' + version
+var status = false;
+//components[""0""].componentIdentifier.coordinates.packageId
+console.log('settings');
+console.log(settings);
+console.log(settings.auth);
+console.log("inputdata");
+console.log(artifact);
+console.log("OSSIndexURL");
+console.log(OSSIndexURL);
+inputStr=JSON.stringify(artifact);
+
+    
+if (!settings.baseURL){
+    retVal = {error: 1001, response: "Problem retrieving URL"};
+    console.log('no base url');
+    return (retVal);
+}
+$.ajax({            
+        type: "GET",
+        // beforeSend: function (request)
+        // {
+        //     //request.withCredentials = true;
+        //     // request.setRequestHeader("Authorization", settings.auth);
+        // },            
+        async: true,
+        url: OSSIndexURL,
+        data: inputStr,
         
-    if (!settings.baseURL){
-        retVal = {error: 1001, response: "Problem retrieving URL"};
-        console.log('no base url');
-        return (retVal);
-    }
-    $.ajax({            
-            type: "GET",
-            // beforeSend: function (request)
-            // {
-            //     //request.withCredentials = true;
-            //     // request.setRequestHeader("Authorization", settings.auth);
-            // },            
-            async: true,
-            url: OSSIndexURL,
-            data: inputStr,
-            
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            crossDomain: true,
-            success: function (responseData, status, jqXHR) {
-                console.log('ajax success');
-                console.log(responseData);
-                status = true;
-                retVal = {error: 0, response: responseData}; //no error
-                //return (retVal);
-                //handleResponseData(responseData);
-                //alert("success");// write success in " "
-                let displayMessage = {
-                    messagetype: messageTypes.displayMessage,
-                    message: retVal,
-                    artifact: artifact
-                }
-                console.log('sendmessage');
-                console.log(displayMessage);
-                chrome.runtime.sendMessage(displayMessage);
-                return(retVal);
-            },
-  
-            error: function (jqXHR, status) {
-                // error handler
-                console.log('some error');
-                console.log(jqXHR);
-                //console.log(jqXHR.responseText  + jqXHR.responseText + jqXHR.status);
-                //alert('fail' + jqXHR.responseText  + '\r\n' + jqXHR.statusText + '\r\n' + 'Code:' +  jqXHR.status);
-                retVal={error: 500, response: jqXHR};
-                return (retVal);
-            },
-            timeout: 3000 // sets timeout to 3 seconds
-        });
-  
-    if(retVal.error == 0){
-        let componentInfoData = retVal;
-        console.log('retVal');
-        console.log(retVal);
-        var componentDetail = componentInfoData.response;
-        console.log("componentInfoData");
-        console.log(componentDetail);
-        
-        
-    }else{
-        //an error
-        console.log('an eror occurred, show the response')
-        // $("#error").html(retVal.response.statusText);
-        // $("#error").show(1000);
-    }
-    // window.responsedata = retVal;
-    return retVal;
-  };
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        crossDomain: true,
+        success: function (responseData, status, jqXHR) {
+            console.log('ajax success');
+            console.log(responseData);
+            status = true;
+            retVal = {error: 0, response: responseData}; //no error
+            //return (retVal);
+            //handleResponseData(responseData);
+            //alert("success");// write success in " "
+            let displayMessage = {
+                messagetype: messageTypes.displayMessage,
+                message: retVal,
+                artifact: artifact
+            }
+            console.log('sendmessage');
+            console.log(displayMessage);
+            chrome.runtime.sendMessage(displayMessage);
+            return(retVal);
+        },
+
+        error: function (jqXHR, status) {
+            // error handler
+            console.log('some error');
+            console.log(jqXHR);
+            //console.log(jqXHR.responseText  + jqXHR.responseText + jqXHR.status);
+            //alert('fail' + jqXHR.responseText  + '\r\n' + jqXHR.statusText + '\r\n' + 'Code:' +  jqXHR.status);
+            retVal={error: 500, response: jqXHR};
+            return (retVal);
+        },
+        timeout: 3000 // sets timeout to 3 seconds
+    });
+
+if(retVal.error == 0){
+    let componentInfoData = retVal;
+    console.log('retVal');
+    console.log(retVal);
+    var componentDetail = componentInfoData.response;
+    console.log("componentInfoData");
+    console.log(componentDetail);
+    
+    
+}else{
+    //an error
+    console.log('an eror occurred, show the response')
+    // $("#error").html(retVal.response.statusText);
+    // $("#error").show(1000);
+}
+// window.responsedata = retVal;
+return retVal;
+};
  
 
 chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
@@ -720,6 +610,6 @@ chrome.runtime.onInstalled.addListener(function() {
             actions: [new chrome.declarativeContent.ShowPageAction()]
       }]);
     });
-  });
+});
 
   
