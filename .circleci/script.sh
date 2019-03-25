@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# fail if any commands fails
+set -e
+# debug log
+set -x
+
+# write your script here
+echo "Hello World!"
+
+# or run a script from your repository, like:
+# bash ./path/to/script.sh
+# not just bash, e.g.:
+# ruby ./path/to/script.rb
+iqScannerDirectory="iqscanner"
+mkdir -p $iqScannerDirectory
+if [ -z "$(ls -A $iqScannerDirectory)" ]; then
+   echo "Empty"
+else
+   echo "Not Empty"
+   rm $iqScannerDirectory/*
+fi
+IQ_CLI_ADDRESS = 'https://download.sonatype.com/clm/server/latest.tar.gz'
+IQ_SERVER_ADDRESS = 'http://ec2-54-255-162-59.ap-southeast-1.compute.amazonaws.com:8070/'
+
+wget -q $IQ_CLI_ADDRESS -P $iqScannerDirectory
+
+
+filename=$(ls $iqScannerDirectory) && tar -zxvf $iqScannerDirectory/$filename -C $iqScannerDirectory
+cliScanner=$(ls $iqScannerDirectory/*cli*)
+
+#copying the dependencies
+# ./gradlew copyDependenciesRelease
+
+#now we scan with IQScanner
+#./gradlew iqScan $cliScanner, $IQ_SERVER_ADDRESS, $IQ_SERVER_USER_NAME, $IQ_SERVER_PASSWORD
+
+iqscandir='node_modules'
+appName=chome-extension-nexus-iq
+java -jar $cliScanner -s $IQ_SERVER_ADDRESS -a admin:12345 -i $appName $iqscandir

@@ -1,31 +1,32 @@
 console.log('contentscript.js');
-var formats = {
-  maven: "maven",
-  npm: "npm",
-  nuget: "nuget",
-  gem: "gem",
-  pypi: "pypi",
-  packagist: "packagist",
-  cocoapods: "cocoapods"
-}
+// var formats = {
+//   maven: "maven",
+//   npm: "npm",
+//   nuget: "nuget",
+//   gem: "gem",
+//   pypi: "pypi",
+//   packagist: "packagist",
+//   cocoapods: "cocoapods"
+// }
 
-const dataSources = {
-  NEXUSIQ: 'NEXUSIQ',
-  OSSINDEX: 'OSSINDEX'
-}
+// const dataSources = {
+//   NEXUSIQ: 'NEXUSIQ',
+//   OSSINDEX: 'OSSINDEX'
+// }
 
+// var messageType = {
+//   login: "login",
+//   evaluate: "evaluate",
+//   loggedIn:"loggedIn",
+//   displayMessage: "displayMessage",
+//   loginFailedMessage: "loginFailedMessage",
+//   beginevaluate: "beginevaluate",
+//   artifact: "artifact"
+
+// };
 
 chrome.runtime.onMessage.addListener(gotMessage);
-var messageType = {
-    login: "login",
-    evaluate: "evaluate",
-    loggedIn:"loggedIn",
-    displayMessage: "displayMessage",
-    loginFailedMessage: "loginFailedMessage",
-    beginevaluate: "beginevaluate",
-    artifact: "artifact"
 
-};
 function gotMessage(message, sender, sendResponse){
     console.log('gotMessage');
     console.log(message);
@@ -43,7 +44,7 @@ function gotMessage(message, sender, sendResponse){
     let format = artifact.format;
     let evaluatemessage = {
         artifact: artifact,        
-        messagetype: messageType.evaluate
+        messagetype: messageTypes.evaluate
     }
     chrome.runtime.sendMessage(evaluatemessage);
 
@@ -130,7 +131,7 @@ function ParsePage(){
     //now we write this to background as
     //we pass variables through background
     message = {
-      messagetype: messageType.artifact,       
+      messagetype: messageTypes.artifact,       
       payload: artifact
     };
     chrome.runtime.sendMessage(message, function(response){

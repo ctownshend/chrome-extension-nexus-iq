@@ -6,32 +6,7 @@ window.serverBaseURL = ""
 window.username = ""
 window.password = ""
 window.haveLoggedIn = false
-var messageType = {
-    login: "login",  //message to send that we are in the process of logging in
-    loggedIn:"loggedIn",    //message to send that we are in the loggedin
-    loginFailedMessage: "loginFailedMessage",  //message to send that login failed
-    beginevaluate: "beginevaluate",  //message to send that we are beginning the evaluation process, it's different to the evaluatew message for a readon that TODO I fgogot
-    evaluate: "evaluate",  //message to send that we are evaluating
-    artifact: "artifact", //passing a artifact/package identifier from content to the background to kick off the eval
-    displayMessage: "displayMessage"  //message to send that we have data from REST and wish to display it
-};
-
-
-var formats = {
-    maven: "maven",
-    npm: "npm",
-    nuget: "nuget",
-    gem: "gem",
-    pypi: "pypi",
-    packagist: "packagist",
-    cocoapods: "cocoapods"
-}
-  
-
-const dataSources = {
-    NEXUSIQ: 'NEXUSIQ',
-    OSSINDEX: 'OSSINDEX'
-  }
+ 
 
 // getActiveTab();
 
@@ -46,7 +21,7 @@ function gotMessage(message, sender, sendResponse){
     console.log('message')
     console.log(message)
     switch (message.messagetype){
-        case messageType.login:
+        case messageTypes.login:
             //login attempt
             baseURL = message.baseURL;
             username = message.username;
@@ -57,7 +32,7 @@ function gotMessage(message, sender, sendResponse){
             window.password = password;//"admin123"
             retval = login(settings);
             break;
-        case messageType.evaluate:
+        case messageTypes.evaluate:
             //evaluate
             artifact = message.artifact;
             // window.baseURL = "http://iq-server:8070/"
@@ -76,13 +51,13 @@ function gotMessage(message, sender, sendResponse){
             // retval = evaluate2(artifact, settings);
             retval = loadSettingsAndEvaluate(artifact);
             break;
-        case messageType.displayMessage:            
+        case messageTypes.displayMessage:            
             //display message
             //this needs to be ignored in the background.js
             //because it is for the popup only to display
             console.log('background display message message');
             break;
-        case messageType.artifact:            
+        case messageTypes.artifact:            
             //display message
             //this needs to be ignored in the background.js
             //because it is for the popup only to display
@@ -113,7 +88,7 @@ function loadSettingsAndEvaluate(artifact){
             // settings = BuildEmptySettings();
             
             let errorMessage = {
-                messagetype: messageType.loginFailedMessage,
+                messagetype: messageTypes.loginFailedMessage,
                 message: {response:"no Login Settings have been saved yet. Go to the options page."},
                 artifact: artifact
             }
@@ -138,7 +113,7 @@ function login(settings){
     var retVal;
     // var retVal = {error: false, response: 'ok'};
     // let loggedInMessage = {
-    //     messageType: messageType.loggedIn,
+    //     messageType: messageTypes.loggedIn,
     //     message: retVal
     // }
     // chrome.runtime.sendMessage(loggedInMessage);
@@ -171,7 +146,7 @@ function login(settings){
                 console.log('happy days');
             }
             let loggedInMessage = {
-                messagetype: messageType.loggedIn,
+                messagetype: messageTypes.loggedIn,
                 message: retVal
             }
             window.haveLoggedIn = true;
@@ -185,7 +160,7 @@ function login(settings){
         console.log(xhr);
         retVal = {error: xhr.status, response: xhr.responseText};
         let loginFailedMessage = {
-            messagetype: messageType.loginFailedMessage,
+            messagetype: messageTypes.loginFailedMessage,
             message: retVal,
             
         }
@@ -199,34 +174,7 @@ function login(settings){
     console.log(xhr);
     
 }
-function zzevaluate2(artifact, settings){
-    let inputJSON = NexusFormatNPM(artifact)
-    const url = settings.url;
-    console.log(settings.auth);
-    fetch(url, {
-        method : "POST",
-        mode: "no-cors", //"same-origin", //cors", // no-cors, cors, 
-        // cache: "no-cache",
-        // credentials: "same-origin", // include, *same-origin, omit
-        credentials: "same-origin", 
-        headers: {
-            "Content-Type": "application/json",
-            // "Content-Type": "application/x-www-form-urlencoded",
-            'Authorization': settings.auth,
-        },
-        body: JSON.stringify(inputJSON),
-        // -- or --
-        // body : JSON.stringify({
-            // user : document.getElementById('user').value,
-            // ...
-        // })
-    }).then(
-        response => response.text() // .json(), etc.
-        // same as function(response) {return response.text();}
-    ).then(
-        html => console.log(html)
-    );
-}
+
 
 function evaluate(artifact, settings){
     console.log('evaluate');
@@ -248,31 +196,6 @@ function evaluate(artifact, settings){
     }
 }
 
-function removeCookies(settings){
-    console.log('removeCookies')
-    //settings.url = http://iq-server:8070/
-    let leftPart = settings.url.search('//')+2;
-    let server = settings.url.substring(leftPart);
-    let rightPart = server.search(':')-1;
-    if (rightPart < 0){
-        rightPart = server.search(leftPart, '/')-1;
-        if (rightPart < 0){
-            rightPart = server.length;
-        }
-    }
-    server = server.substring(0, rightPart+1)
-    //".iq-server"
-    let domain = "." + server;
-    chrome.cookies.getAll({domain: domain}, function(cookies) {
-        console.log('here');
-        for(var i=0; i<cookies.length;i++) {
-          console.log(cookies[i]);
-    
-          chrome.cookies.remove({url: settings.url, name: cookies[i].name});
-        }
-      });
-     chrome.cookies.remove({url: settings.url, name: "CLMSESSIONID"});  
-}
 
 function callIQ(artifact, settings){
     console.log("evaluate");
@@ -353,7 +276,7 @@ function callIQ(artifact, settings){
                 console.log('happy days');
             }
             let displayMessage = {
-                messagetype: messageType.displayMessage,
+                messagetype: messageTypes.displayMessage,
                 message: retVal,
                 artifact: artifact
             }
@@ -369,7 +292,7 @@ function callIQ(artifact, settings){
         let response = {errorMessage: xhr.responseText};
         retVal = {error: xhr.status, response: response};
         let displayMessage = {
-            messagetype: messageType.displayMessage,
+            messagetype: messageTypes.displayMessage,
             message: retVal,
             artifact: artifact
         }
@@ -681,7 +604,7 @@ function ToggleIcon(tab){
                 //handleResponseData(responseData);
                 //alert("success");// write success in " "
                 let displayMessage = {
-                    messagetype: messageType.displayMessage,
+                    messagetype: messageTypes.displayMessage,
                     message: retVal,
                     artifact: artifact
                 }

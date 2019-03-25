@@ -4,6 +4,8 @@
 #
 version: 2
 jobs:
+  
+            
   build:
     docker:
       # specify the version you desire here
@@ -35,3 +37,8 @@ jobs:
 
       # run tests!
       - run: npm test
+
+      - run:
+          name: nexus Vulnerabilithy scan
+          command: |            
+            sudo sh script.sh

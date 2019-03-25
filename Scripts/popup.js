@@ -3,31 +3,32 @@ if (typeof chrome !== "undefined"){
     chrome.runtime.onMessage.addListener(gotMessage);
 }
 
-var messageType = {
-    login: "login",  //message to send that we are in the process of logging in
-    evaluate: "evaluate",  //message to send that we are evaluating
-    loggedIn:"loggedIn",    //message to send that we are in the loggedin
-    displayMessage: "displayMessage",  //message to send that we have data from REST and wish to display it
-    loginFailedMessage: "loginFailedMessage",  //message to send that login failed
-    beginevaluate: "beginevaluate",  //message to send that we are beginning the evaluation process, it's different to the evaluatew message for a readon that TODO I fgogot
-    artifact: "artifact" //passing a artifact/package identifier from content to the background to kick off the eval
+// var messageType = {
+//     login: "login",  //message to send that we are in the process of logging in
+//     evaluate: "evaluate",  //message to send that we are evaluating
+//     loggedIn:"loggedIn",    //message to send that we are in the loggedin
+//     displayMessage: "displayMessage",  //message to send that we have data from REST and wish to display it
+//     loginFailedMessage: "loginFailedMessage",  //message to send that login failed
+//     beginevaluate: "beginevaluate",  //message to send that we are beginning the evaluation process, it's different to the evaluatew message for a readon that TODO I fgogot
+//     artifact: "artifact" //passing a artifact/package identifier from content to the background to kick off the eval
 
-};
-const dataSource = {
-    NEXUSIQ: 'NEXUSIQ',
-    OSSINDEX: 'OSSINDEX'
-  }
+// };
+
+// const dataSource = {
+//     NEXUSIQ: 'NEXUSIQ',
+//     OSSINDEX: 'OSSINDEX'
+//   }
 
 
-var formats = {
-    maven: "maven",
-    npm: "npm",
-    nuget: "nuget",
-    gem: "gem",
-    pypi: "pypi",
-    packagist: "packagist",
-    cocoapods: "cocoapods"
-}
+// var formats = {
+//     maven: "maven",
+//     npm: "npm",
+//     nuget: "nuget",
+//     gem: "gem",
+//     pypi: "pypi",
+//     packagist: "packagist",
+//     cocoapods: "cocoapods"
+// }
 
 //var settings;
 //var componentInfoData;
@@ -80,12 +81,13 @@ function beginEvaluation(){
     let tabs = chrome.tabs.query(params, gotTabs);
     function gotTabs(tabs){
         let message = {
-            messagetype: messageType.beginevaluate
+            messagetype: messageTypes.beginevaluate
         }
         let thisTab = tabs[0]
         let tabId = thisTab.id
+        let url = thisTab.url;
         
-        if (checkPageIsHandled(thisTab)){
+        if (checkPageIsHandled(url)){
             //this sends a message to the content tab
             //hopefully it will tell me what it sees
             //this fixes a bug where we did not get the right DOM because we did not know what page we were on
@@ -97,23 +99,7 @@ function beginEvaluation(){
     }
 }
 
-function checkPageIsHandled(tab){
-    console.log("checkPageIsHandled")
-    console.log(tab)
-    //check the url of the tab is in this collection
-    let url = tab.url
-    let found = false
-    if (url.search("https://search.maven.org/") >= 0 ||
-        url.search("https://mvnrepository.com/") >= 0 ||
-        url.search("https://www.npmjs.com/") >= 0 ||
-        url.search("https://www.nuget.org/") >= 0 ||
-        url.search("https://rubygems.org/") >= 0 ||
-        url.search("https://pypi.org/") >= 0 ||
-        url.search("https://packagist.org/") >= 0){
-            found = true;
-        }
-    return found;
-}
+
 function readyHandler(){
     console.log("popup.js");
     console.log(document);
@@ -137,7 +123,7 @@ function gotMessage(message, sender, sendResponse){
     console.log('popup got message');
     console.log(respMessage);
     switch(respMessage.messagetype){
-        case messageType.displayMessage:            
+        case messageTypes.displayMessage:            
             // alert("displayMessage");
             if (respMessage.message.error){
                 showError(respMessage.message.response);
@@ -152,12 +138,12 @@ function gotMessage(message, sender, sendResponse){
                 let htmlCreated = createHTML(message);
             }            
             break;
-        case messageType.loggedIn:
+        case messageTypes.loggedIn:
             //logged in so now we evaluate
             console.log('logged in, now evaluate');
             let evalBegan = beginEvaluation();
             break;
-        case messageType.loginFailedMessage:
+        case messageTypes.loginFailedMessage:
             //display error
             console.log('display error');
             console.log(message);
@@ -170,165 +156,6 @@ function gotMessage(message, sender, sendResponse){
 }
 
 
-//19/03/19 - CPT - I don't need this anymore as I am rethinking the event processing
-// function popup() {
-//     console.log('popup');
-//     var message;
-
-//     chrome.tabs.query({currentWindow: true, active: true}, function (tabs){
-//         console.log('chrome.tabs.query');
-//         var tab = tabs[0];
-//         console.log(tab);
-//         //message = { messageType: "popup", payLoad: tab};
-//         var code = 'window.location.reload();';
-//         chrome.tabs.executeScript(tab.id, {code: code});
-//         //chrome.tabs.sendMessage(tab.id, message);
-//         // chrome.runtime.sendMessage(message, function(response){
-//         //     //sends a message to background handler
-//         //     message = {messageType: "popup", payload: tab};
-//         // });    
-//     });
-// }
-
-// function NexusFormatNPM(jqueryData){  
-// 	//return a dictionary in Nexus Format
-//     //return dictionary of components
-//     componentDict = {"components":[	
-//         component = {
-//             "hash": null, 
-//             "componentIdentifier": 
-//                 {
-//                 "format": artifact.format,
-//                 "coordinates" : 
-//                     {
-//                         "packageId": jqueryData.packageName, 
-//                         "version" : jqueryData.version
-//                     }
-//                 }
-//           }
-//         ]
-//     }
-// 	return componentDict
-// }
-
-// function NexusFormatNuget(jqueryData){
-// 	//return a dictionary in Nexus Format ofr Nuget
-//     //return dictionary of components
-//     componentDict = {
-//         "components":[
-//             component = {
-//                 "hash": null, 
-//                 "componentIdentifier": {
-//                     "format":"nuget",
-//                     "coordinates" : {
-//                         "packageId": jqueryData.packageId, 
-//                         "version" : jqueryData.version
-//                         }
-//                     }
-//                 }
-//             ]
-//         }
-// 	return componentDict
-// }
-
-// function NexusFormatRuby(jqueryData){
-// 	//return a dictionary in Nexus Format
-// //return dictionary of components
-// //TODO: how to determine the qualifier and the extension??
-// componentDict = {"components":[	
-
-// 		component = {
-// 			"hash": null, 
-// 			"componentIdentifier": 
-// 				{
-// 				"format":"gem",
-// 				"coordinates" : 
-// 					{
-//                     "name": jqueryData.name, 
-//                     "version" : jqueryData.version
-// 					}
-// 				}
-//       }
-//     ]
-//   }
-// 	return componentDict
-// }
-
-// function NexusFormatPyPI(jqueryData){
-// 	//return a dictionary in Nexus Format
-//     //return dictionary of components
-//     //TODO: how to determine the qualifier and the extension??
-//     componentDict = {"components":[	
-
-//             component = {
-//                 "hash": null, 
-//                 "componentIdentifier": 
-//                     {
-//                     "format":"pypi",
-//                     "coordinates" : 
-//                         {
-//                             "name": jqueryData.name, 
-//                             "qualifier": 'py2.py3-none-any',
-//                             "version" : jqueryData.version,
-//                             "extension" : 'whl'
-//                         }
-//                     }
-//             }
-//         ]
-//     }
-// 	return componentDict
-// }
-
-// function NexusFormatMaven(jqueryData){  
-// 	//return a dictionary in Nexus Format
-//     //return dictionary of components
-//     componentDict = {"components":[	
-
-// 		component = {
-// 			"hash": null, 
-// 			"componentIdentifier": 
-// 				{
-// 				"format":"maven",
-// 				"coordinates" : 
-// 					{
-// 						"groupId": jqueryData.groupId, 
-// 						"artifactId": jqueryData.artifactId, 
-//                         "version" : jqueryData.version,
-//                         'extension': jqueryData.extension
-// 					}
-// 				}
-//       }
-//     ]
-//   }
-// 	return componentDict
-// }
-
-// function displayFindings(message){
-//     console.log('displayFindings(message)')
-//     console.log(message)
-    
-//     if (message !=null  && (message.messageType === 'artifact' || 1 === 1)){
-//         artifact = message.message.response;
-
-//         console.log("artifact");
-//         console.log(artifact);
-                
-//         //var settings = getSettings(addData);
-//         console.log("message");
-//         console.log(message);
-//         // let componentInfoData;
-//         //let settings;
-//         let settings = popuploadSettings(message);
-//         console.log(settings);            
-//         //var componentInfoData = addData(settings, requestdata);
-//         console.log('we got here');
-//         //return;
-//         // console.log(componentInfoData);  
-//         hideLoader();  
-//         return
-//     }
-// };
-
 function createHTML(message)
 {
     console.log('createHTML(message)');
@@ -339,12 +166,12 @@ function createHTML(message)
     // console.log('thisComponent')
     // console.log(thisComponent)
     switch (message.artifact.datasource){
-        case dataSource.NEXUSIQ:
+        case dataSources.NEXUSIQ:
             renderComponentData(message);
             renderLicenseData(message);
             renderSecurityData(message);
             break;
-        case dataSource.OSSINDEX:
+        case dataSources.OSSINDEX:
         //from OSSINdex
             console.log('OSSINDEX');            
             renderComponentDataOSSIndex(message);
@@ -553,53 +380,6 @@ function hideError()
 
 }
 
-// function popuploadSettings(message){
-//     console.log('popuploadSettings');
-
-//     chrome.storage.sync.get(['url', 'username', 'password'], function(data){
-//         //console.log("url: "+ data.url);
-//         //console.log("username: "+ data.username);
-//         //console.log("password: "+ data.password);
-//         let username = data.username;
-//         let password = data.password;
-//         let baseURL = data.url;
-//         let settings = BuildSettings(baseURL, username, password);
-//         //console.log("settings:");
-//         //console.log(settings);        
-//         let componentInfoData = retVal;
-//         var componentDetail = componentInfoData.response.componentDetails["0"];
-//         console.log("componentInfoData");
-//         console.log(componentDetail);
-        
-//         createHTML(componentDetail);
-//         return settings;
-//     });
-//     function BuildSettings(baseURL, username, password){
-//         //let settings = {};
-//         //console.log("BuildSettings");
-//         let tok = username + ':' + password;
-//         let hash = btoa(tok);
-//         let auth =  "Basic " + hash;
-//         let restEndPoint = "api/v2/components/details";
-//         if (baseURL.slice(-1) != '/'){
-//             baseURL += '/';
-//         }
-//         let url = baseURL + restEndPoint;
-
-//         //whenDone(settings);
-//         let settings = {
-//             username : username,
-//             password : password,
-//             tok : tok,
-//             hash : hash,
-//             auth : auth,
-//             restEndPoint : restEndPoint,
-//             baseURL : baseURL,
-//             url : url 
-//         }
-//         return settings;        
-//     };    
-// };
 
 function ChangeIconMessage(showVulnerable)  {
     if(showVulnerable) {
@@ -615,12 +395,9 @@ function ChangeIconMessage(showVulnerable)  {
 function setupAccordion(){
     console.log('setupAccordion');
     $('#accordion').find('.accordion-toggle').click(function(){
-
         //Expand or collapse this panel
         $(this).next().slideToggle('fast');
-  
         //Hide the other panels
         $(".accordion-content").not($(this).next()).slideUp('fast');
-  
-      });
+    });
 }
