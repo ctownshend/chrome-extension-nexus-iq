@@ -10,6 +10,7 @@ Sonatype Nexus IQ Server scan of a component from a chrome extension
 
 ## Table of Contents
 - [Purpose](#purpose)
+- [Data](#data)
 - [Usage](#usage)
 - [Examples](#examples)
 - [Installation](#installation)
@@ -31,7 +32,8 @@ The plugin can scan packages at the following repositories.
 9. Rust - Crates-  https://crates.io/
 10. Golang - Go - https://gocenter.jfrog.com/
 
-
+## Data
+The data is sourced from IQ server which accesses the HDS for those supported ecosystems supported. Currently 1-6. Systems 7-10 get their data from Sonatype OSSIndex.
 
 
 ## Usage
