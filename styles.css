@@ -131,15 +131,24 @@ button {
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
     border-collapse: collapse;
     width: 100%;
+    font-size: 14pt;
   }
   
 .optionstable td, .optionstable th {
     border: 1px solid #ddd;
     padding: 8px;
 }
+.optionstable tr{
+    background-color:#ccc;
+}
+
 
 .optionstable tr:nth-child(even){
     background-color: #f2f2f2;
+}
+
+.optionstable tr:nth-child(old){
+    background-color: #ccc;
 }
 
 .optionstable tr:hover {
@@ -162,20 +171,20 @@ input[type=text], select {
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
-  }
+}
 
-  input[type="password"]
-  {
-      border:none;
-      border-bottom: 1px solid #fff;
-      background: transparent;
-      outline: none;
-      height:40px;
-      color:lightblue;
-      font-size:16px;
-  }
-  
-  input[type=submit], input[type=reset], input[type=button] {
+input[type="password"]
+{
+    border:none;
+    border-bottom: 1px solid #fff;
+    background: transparent;
+    outline: none;
+    height:40px;
+    color:lightblue;
+    font-size:16px;
+}
+
+input[type=submit], input[type=reset], input[type=button] {
     width: 100%;
     background-color:rgb(25, 74, 209);
     color: white;
@@ -184,18 +193,127 @@ input[type=text], select {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-  }
-  
-  input[type=button] {
-    background-color:rgb(25, 74, 209);
-  }
+}
 
-  input[type=submit]:hover {
+input[type=button] {
     background-color:rgb(25, 74, 209);
-  }
-  
-  div .optionstable {
+}
+
+input[type=submit]:hover {
+    background-color:rgb(25, 74, 209);
+}
+
+div .optionstable {
     border-radius: 5px;
     background-color: #f2f2f2;
     padding: 20px;
+}
+
+.label {
+    font-style: italic;
+}
+
+.data{
+    font-weight:bold;
+}
+
+.headingseverity{
+    float:right;
+    
+    
+}
+
+.headingreference{
+    float: left;
+}
+
+
+.criticalSeverity{
+    /* color: red; */
+    font-weight:bold;
+}
+.highSeverity{
+    /* color: #fb2525; */
+    font-weight:bold;
+}
+
+.mediumSeverity{
+    /* color: rgb(243, 134, 45); */
+    font-weight:bold;
+}
+
+.lowSeverity{
+    /* color: rgb(240, 210, 76); */
+    font-weight:bold;
+}
+
+
+#loader {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 1;
+    width: 150px;
+    height: 150px;
+    margin: -75px 0 0 -75px;
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;    
+}
+
+.loader {
+    height: 600px;
+    width: 600px;
+
+
   }
+.loader img {
+    object-fit: cover;
+    object-position: top;
+    display: block;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    overflow: hidden;    
+  }
+
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+  
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+  
+  /* Add animation to "page content" */
+.animate-bottom {
+    position: relative;
+    -webkit-animation-name: animatebottom;
+    -webkit-animation-duration: 1s;
+    animation-name: animatebottom;
+    animation-duration: 1s
+}
+  
+@-webkit-keyframes animatebottom {
+    from { bottom:-100px; opacity:0 } 
+    to { bottom:0px; opacity:1 }
+}
+  
+@keyframes animatebottom { 
+    from{ bottom:-100px; opacity:0 } 
+    to{ bottom:0; opacity:1 }
+}
+  
+#tabs  {
+    display: none;
+    text-align: center;
+}

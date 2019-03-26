@@ -39,7 +39,7 @@ $(function () {
     //setupAccordion();
     showLoader();
     $('#error').hide()
-    $( "#tabs" ).tabs();
+    $('#tabs').tabs();
   
     //begin evaluation sends a message to the background script
     //amd to the content script
@@ -65,7 +65,7 @@ $(function () {
     //     console.log(bpage.message);
     
     // }
-    hideLoader();
+    
 });
 
 
@@ -124,7 +124,8 @@ function gotMessage(message, sender, sendResponse){
     console.log('popup got message');
     console.log(respMessage);
     switch(respMessage.messagetype){
-        case messageTypes.displayMessage:            
+        case messageTypes.displayMessage:    
+            hideLoader();        
             // alert("displayMessage");
             if (respMessage.message.error){
                 showError(respMessage.message.response);
@@ -321,14 +322,38 @@ function renderSecurityData(message){
 
             //console.log(securityIssue.reference);
             //console.log(i);
-            strAccordion += '<h3>' + securityIssue.reference + '</h3>';
+            switch (true){
+                case (securityIssue.severity >= 10):
+                    className = "criticalSeverity" 
+                    break;
+                case (securityIssue.severity >= 7):
+                    className = "highSeverity" 
+                    break;
+                case (securityIssue.severity >= 5):
+                    className = "mediumSeverity" 
+                    break;
+                case (securityIssue.severity >= 0):
+                    className = "lowSeverity" 
+                    break;
+                default:
+                    break;
+            }
+            strAccordion += '<h3><span class="headingreference">' + securityIssue.reference + '</span><span class="headingseverity ' + className +'">CVSS:' + securityIssue.severity + '</span></h3>';
             strAccordion += '<div>';
-            strAccordion += '<p>Reference: ' + securityIssue.reference + '</p>';
-            strAccordion += '<p>Severity: ' + securityIssue.severity + '</p>';
-            strAccordion += '<p>Source: ' + securityIssue.source + '</p>';
-            strAccordion += '<p>Threat Category: ' + securityIssue.threatCategory + '</p>';            
+            strAccordion += '<table>'
+            strAccordion += '<tr>'
+            strAccordion += '<td class="label">Reference:</td><td class="data">' + securityIssue.reference + '</td>';
+            strAccordion += '</tr><tr>'
+            strAccordion += '<td class="label">Severity:</td><td class="data">' + securityIssue.severity + '</td>';
+            strAccordion += '</tr><tr>'
+            strAccordion += '<td class="label">Source:</td><td class="data">' + securityIssue.source + '</td>';
+            strAccordion += '</tr><tr>'
+            strAccordion += '<td class="label">Threat Category:</td><td class="data">' + securityIssue.threatCategory + '</td>';            
+            strAccordion += '</tr><tr>'
             //strAccordion += '<p>url:</p><a href="' + securityIssue.url + '">' + securityIssue.url + '</a>';
-            strAccordion += '<p>url:' + securityIssue.url + '</p>';
+            strAccordion += '<td class="label">url:</td><td class="data">' + securityIssue.url + '</td>';
+            strAccordion += '</tr>'
+            strAccordion += '</table>'
             strAccordion += '</div>';            
         }
         console.log(strAccordion);
@@ -356,7 +381,9 @@ function showLoader()
 
 function hideLoader()
 {
-    $(".loader").fadeOut("slow");
+    //$(".loader").fadeOut("slow");
+    document.getElementById("loader").style.display = "none";
+    document.getElementById("tabs").style.display = "block";
 }
 
 function showError(error)

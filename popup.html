@@ -19,51 +19,87 @@
         <title>Component Info</title>
     </head>
     <body>
-            <div class="loader"></div>
+        <div class="loader" id="loader"><img src="images/SON_logo_favicon.png"></div>
 
- 
-<div id="tabs" class="optionstable">
-        <ul>
-          <li><a href="#tabs-1">Component Info</a></li>
-          <li><a href="#tabs-2">Licensing</a></li>
-          <li><a href="#tabs-3">Security</a></li>
-        </ul>
-        <div id="tabs-1">
-                <p>Format: <span id="format"></span></p>
-                <div id="component_identifier">
-                    <p>Package: <span id="package"></span></p>                
-                    <p>Version: <span id="version"></span></p>
+    
+        <div id="tabs" class="optionstable animate-bottom" >
+            <ul>
+            <li><a href="#tabs-1">Component Info</a></li>
+            <li><a href="#tabs-2">Licensing</a></li>
+            <li><a href="#tabs-3">Security</a></li>
+            </ul>
+            <div id="tabs-1">
+                <table class="optionstable">
+                    <tr>
+                        <td class="label">Format:</td> 
+                        <td class="data"><span id="format"></span></td>
+                    </tr>
+                    <div id="component_identifier">
+                        <tr>
+                            <td class="label">Package:</td>
+                            <td class="data"><span id="package"></span></td>
+                        </tr>
+                        <tr>
+                            <td class="label">Version:</td>
+                            <td class="data"><span id="version"></span></td>
+                        </tr>
+                    </div>
+                    <tr>
+                        <td class="label">Hash:</td>
+                        <td class="data"><span id="hash"></span></td>
+                    </tr>
+                    <tr>    
+                        <td class="label">Match State:</td>
+                        <td class="data"><span id="matchstate"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="label">CatalogDate:</td>
+                        <td class="data"><span id="catalogdate"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="label">RelativePopularity:</td>                
+                        <td class="data"><span id="relativepopularity"></span></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="tabs-2">
+                <table class="optionstable" id="licensetable">
+                    <tr>
+                        <td colspan="2"><strong>DeclaredLicenses</strong></td>
+                        <td></td>
+                    </tr>            
+                    
+                    <div id="declaredlicenses">
+                        <tr>
+                            <td>License Id: <a id="declaredlicenses_licenseLink" href="test.html" target="_blank">LicenseLink</a></td>
+                            <td>License Name: <span id="declaredlicenses_licenseName"></span></td>
+                        </tr>  
+                    </div>
+                    <tr>
+                        <td colspan="2">
+                            <p><strong>Observed Licenses</strong></p>
+                        </td>
+                    </tr>                
+                    <div id="observedlicenses">                     
+                        <tr>
+                            <td>License Id: <span id="observedLicenses_licenseId"></span></td>
+                            <td><div id="observedLicenses_licenseLink"></div>License Name: <span id="observedLicenses_licenseName"></span></td>
+                        </tr>
+                    </div>
+                </table>            
+            </div>
+            <div id="tabs-3">
+                <div id="accordion">
                 </div>
-                <p>Hash: <span id="hash"></span</p>
-                <p>Match State: <span id="matchstate"></span></p>                        
-                <p>CatalogDate: <span id="catalogdate"></span></p>
-                <p>RelativePopularity: <span id="relativepopularity"></span></p>      
-        </div>
-        <div id="tabs-2">
-                <p><strong>DeclaredLicenses</strong></p>
-                <div id="declaredlicenses">
-                    <p>License Id:</p> <a id="declaredlicenses_licenseLink" href="test.html" target="_blank">LicenseLink</a>                    
-                    <p>License Name: <span id="declaredlicenses_licenseName"></span></p>
-                </div>  
-                <p><strong>Observed Licenses</strong></p>
-                <div id="observedlicenses">                     
-                    <p>License Id: <span id="observedLicenses_licenseId"></span></p>
-                        <div id="observedLicenses_licenseLink"></div>
-                    <p>License Name: <span id="observedLicenses_licenseName"></span></p>
-                </div>
-        </div>
-        <div id="tabs-3">
-            <div id="accordion" >
             </div>
         </div>
-      </div>
-      <div id="error"  class="error"><p >Some error occurred</p></div>
+        <div id="error"  class="error"><p >Some error occurred</p></div>
 
-        <!--[if lt IE 7]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
-        <!--First cut of this code will only handle a single npm component-->
-        
-        
+            <!--[if lt IE 7]>
+                <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+            <![endif]-->
+            <!--First cut of this code will only handle a single npm component-->
+            
+            
     </body>
 </html>
