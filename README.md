@@ -35,7 +35,7 @@ The plugin can scan packages at the following repositories.
 
 
 ## Usage
-1. The install will create a new icon as per the instructions above above.
+1. The install will create a new icon in your Chrome Browser next to the location box.
 <br/>
 <img src="images/Extensions_Icon_created.png" alt="drawing" width="250"/>
 <br/>
@@ -44,11 +44,11 @@ The plugin can scan packages at the following repositories.
 
 3. Navigate to one of the pages that the extension is compatible with (see the list below).
 
-4. Click on the Blue Lightbulb and you will see a waiting cursor animation then your data.
+4. Click on the Blue Lightbulb... 
 <br/>
 <img src="images/Extension_lodash_-_npm_4.17.9.png" alt="drawing" width="250"/>
 <br/>
-4.1 The solution will think for a second
+4.1 ...The solution will think for a second...Then show the Data.
 <br/>
 <img src="images/Extension_thinking_icon.png" alt="drawing" width="250"/>
 <br/>
@@ -85,6 +85,7 @@ The list of pages that are supported are here.
 <br/>and
 <br/>`https://www.npmjs.com/package/<package>/v/<version>`
 <br/>e.g. https://www.npmjs.com/package/lodash/v/4.17.9
+
 * DotNet - nuget - 
 <br/>
 `https://www.nuget.org/packages/<package>/<version>`
