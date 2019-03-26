@@ -1,6 +1,6 @@
 # Chrome Extension for Sonatype Nexexus IQ
 
-<img src="images/SON_logo_favicon.png" alt="drawing" width="300"/>
+<img src="images/SON_logo_favicon.png" alt="drawing" width="100"/>
 </br>
 Sonatype Nexus IQ Server scan of a component from a chrome extension
 
@@ -38,23 +38,18 @@ The data is sourced from IQ server which accesses the HDS for those supported ec
 
 ## Usage
 1. The install will create a new icon in your Chrome Browser next to the location box.
-<br/>
 <img src="images/Extensions_Icon_created.png" alt="drawing" width="300"/>
 <br/>
-
 2. The plugin will work on any new page opened after install. It will not work on pages already opened at time of install.
 
 3. Navigate to one of the pages that the extension is compatible with (see the list below).
 
 4. Click on the Blue Lightbulb... 
-<br/>
 <img src="images/Extension_lodash_-_npm_4.17.9.png" alt="drawing" width="300"/>
 <br/>
 4.1 ...The solution will think for a second...Then show the Data.
-<br/>
 <img src="images/Extension_thinking_icon.png" alt="drawing" width="300"/>
 <br/>
-
 5. Component Information
 <img src="images/Extension_Component_info.png" alt="drawing" width="300"/>
 <br/>
@@ -86,7 +81,7 @@ Pattern - `https://www.npmjs.com/package/<package>`
 <br/>e.g. https://www.npmjs.com/package/lodash/v/4.17.9
 ### DotNet - nuget
 Pattern - `https://www.nuget.org/packages/<package>/<version>`
-<br/>e.g. https://www.nuget.org/packages/LibGit2Sharp/0.1.0
+<br/>e.g. https://www.nuget.org/packages/LibGit2Sharp/0.20.1
 ### Ruby - rubygems
 Pattern - `https://rubygems.org/gems/<package>`
 <br/>e.g. https://rubygems.org/gems/bundler
@@ -110,6 +105,7 @@ Pattern - `https://crates.io/`
 
 ## Installation
 1. Download the plugin from Github
+`git clone https://github.com/sonatype-nexus-community/nexus-iq-chrome-extension.git`
 2. Open Chrome Browser
 3. Click on the three dots, then More Tools, then Extensions
 <br/>
@@ -119,15 +115,15 @@ Pattern - `https://crates.io/`
 <br/>
 <img src="images/Extensions_Load_upacked.png" alt="drawing" width="300"/>
 <br/>
-5. Navigate to the folder where you downloaded the plugin fro gihub onto your local machine.
+5. Navigate to the folder where you downloaded the plugin from gihub onto your local machine.
 <br/>
 <img src="images/Extensions_Choose_Folder.png" alt="drawing" width="300"/>
 <br/>
-6. You will be prompted to enter your login details. (Important: Please not that this version stores your details in plain text in Chrome Storage. We are investigated secure storage but at this time we do not support it.)
+6. You will be prompted to enter your login details. (Important: Please note that this version stores your details in plain text in Chrome Storage. We are investigated secure storage but at this time we do not support it.)
 <br/>
 <img src="images/Extensions_Empty_login.png" alt="drawing" width="300"/>
 <br/>
-7. Enter your delays and click save.
+7. Enter your details and click save.
 <br/>
 <img src="images/Extensions_Login_Entered.png" alt="drawing" width="300"/>
 <br/>
