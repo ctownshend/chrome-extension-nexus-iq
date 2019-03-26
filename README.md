@@ -60,6 +60,7 @@ The plugin can scan packages at the following repositories.
 <img src="images/Extension_Licensing.png" alt="drawing" width="250"/>
 <br/>
 7. Security Information
+The security data is presented in a list with clickable sections for each vulnerbaility.
 <img src="images/Extension_Security.png" alt="drawing" width="250"/>
 <br/>
 
@@ -69,37 +70,39 @@ The plugin can scan packages at the following repositories.
 The list of pages that are supported are here.
 
 
-* Java - maven
+### Java - maven
 <br/>Pattern - `https://search.maven.org/artifact/<group>/<artifact>/<version>/<extension>`
 <br/>e.g. https://search.maven.org/artifact/org.apache.struts/struts2-core/2.3.30/jar
-* Java - maven
+### Java - maven
 <br/>Pattern -`https://mvnrepository.com/artifact/<group>/<artifact>/<version>`
 <br/>e.g. https://mvnrepository.com/artifact/commons-collections/commons-collections/3.2.1
-* JS/Node - npm
+### JS/Node - npm
 <br/>Pattern - `https://www.npmjs.com/package/<package>`
 <br/>e.g. https://www.npmjs.com/package/lodash/
 <br/>and
 <br/>Pattern - `https://www.npmjs.com/package/<package>/v/<version>`
 <br/>e.g. https://www.npmjs.com/package/lodash/v/4.17.9
-* DotNet - nuget -
+### DotNet - nuget
 <br/>Pattern - `https://www.nuget.org/packages/<package>/<version>`
 <br/>e.g. https://www.nuget.org/packages/LibGit2Sharp/0.1.0
-* Ruby - rubygems - 
+### Ruby - rubygems
 <br/>Pattern - `https://rubygems.org/gems/<package>`
 <br/>e.g. https://rubygems.org/gems/bundler
-* Python - pypi - 
+### Python - pypi
 <br/>Pattern - `https://pypi.org/<package>/`
 <br/>e.g. https://pypi.org/project/Django/
 <br/>or Pattern - `https://pypi.org/<package>/<version>/`
 <br/>e.g. https://pypi.org/project/Django/1.6/
-* php - packagist/composer/ -
+### php - packagist/composer/
 <br/>Pattern - `https://packagist.org/`
 <br/>e.g. https://packagist.org/packages/drupal/drupal
-* R - CRAN -  <br/>`https://cran.r-project.org/`
+### R - CRAN
+<br/>Pattern - `https://cran.r-project.org/`
 <br/>e.g. https://cran.r-project.org/web/packages/A3/index.html
-* Rust - Crates-  <br/>`https://crates.io/`
+### Rust - Crates
+<br/>Pattern - `https://crates.io/`
 <br/>e.g. https://crates.io/crates/random
-* Golang - Go - 
+### Golang - Go - 
 <br/>`https://gocenter.jfrog.com`
 <br/>e.g. https://gocenter.jfrog.com/github.com~2Fjbenet~2Fgo-random/versions
 
