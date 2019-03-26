@@ -1,5 +1,6 @@
 window.onload = function(){
   console.log('here');
+  document.getElementById('url').focus();
   document.getElementById('cancel').onclick=function(){
     var ok = true;
     if(ok){

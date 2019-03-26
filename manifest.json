@@ -1,8 +1,8 @@
 {
     "name": "Sonatype Nexus IQ Evaluation",
-    "description": "Sonatype Nexus IQ Evaluation",
+    "description": "Sonatype Nexus IQ Evaluation-community developed",
     "author": "Cameron Townshend - cameron.townshend@sonatype.com",
-    "version": "1.7.4",
+    "version": "1.7.5",
     "manifest_version": 2,
     "permissions": [
       "storage",
@@ -41,10 +41,10 @@
        }
      }, 
     "icons": {
-      "16": "images/IQ_Default.png",
-      "32": "images/IQ_Default.png",
-      "48": "images/IQ_Default.png",
-      "128": "images/IQ_Default.png"
+      "16": "images/SON_logo_favicon.png",
+      "32": "images/SON_logo_favicon.png",
+      "48": "images/SON_logo_favicon.png",
+      "128": "images/SON_logo_favicon.png"
     },
     "content_scripts":[
       {

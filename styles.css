@@ -20,6 +20,9 @@ body{
     width: 300px;
     height: 100px;
     color:red;
+    padding: 20px;
+    margin: 20px;
+    font-size: 16px;
 }
 #error p {
     color: red; 
@@ -85,7 +88,7 @@ body{
     background: transparent;
     outline: none;
     height:40px;
-    color:rgb(25, 74, 209);
+    color: #fff;
     font-size:16px;
 }
 
@@ -163,7 +166,7 @@ button {
     color: white;
 }
 
-input[type=text], select {
+input[type=text], input[type="password"] select {
     width: 100%;
     padding: 12px 20px;
     margin: 8px 0;
@@ -173,16 +176,7 @@ input[type=text], select {
     box-sizing: border-box;
 }
 
-input[type="password"]
-{
-    border:none;
-    border-bottom: 1px solid #fff;
-    background: transparent;
-    outline: none;
-    height:40px;
-    color:lightblue;
-    font-size:16px;
-}
+
 
 input[type=submit], input[type=reset], input[type=button] {
     width: 100%;
@@ -256,9 +250,9 @@ div .optionstable {
     width: 150px;
     height: 150px;
     margin: -75px 0 0 -75px;
-    border: 16px solid #f3f3f3;
+    border: 16px solid white;
     border-radius: 50%;
-    border-top: 16px solid #3498db;
+    border-top: 16px solid white;
     width: 120px;
     height: 120px;
     -webkit-animation: spin 2s linear infinite;

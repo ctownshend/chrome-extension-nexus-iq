@@ -123,9 +123,9 @@ function gotMessage(message, sender, sendResponse){
     //this is the callback handler for a message received
     console.log('popup got message');
     console.log(respMessage);
+    let hasError = false;
     switch(respMessage.messagetype){
         case messageTypes.displayMessage:    
-            hideLoader();        
             // alert("displayMessage");
             if (respMessage.message.error){
                 showError(respMessage.message.response);
@@ -139,22 +139,28 @@ function gotMessage(message, sender, sendResponse){
                 // displayFindings(message);
                 let htmlCreated = createHTML(message);
             }            
+            hideLoader(hasError);
             break;
         case messageTypes.loggedIn:
+            
             //logged in so now we evaluate
             console.log('logged in, now evaluate');
             let evalBegan = beginEvaluation();
+            hideLoader(hasError);
             break;
         case messageTypes.loginFailedMessage:
+            hasError = true;
             //display error
             console.log('display error');
             console.log(message);
             let errorShown = showError(message.message.response);
+            hideLoader(hasError);
             break;
         default:
-            //do nothing for now
-    
+            //do nothing for now    
     }
+        
+
 }
 
 
@@ -379,7 +385,7 @@ function showLoader()
     $(".loader").fadeIn("slow");
 }
 
-function hideLoader()
+function hideLoader(hasError)
 {
     //$(".loader").fadeOut("slow");
     document.getElementById("loader").style.display = "none";

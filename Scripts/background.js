@@ -7,6 +7,15 @@ window.username = ""
 window.password = ""
 window.haveLoggedIn = false
  
+function install_notice() {
+    if (localStorage.getItem('install_time'))
+        return;
+
+    var now = new Date().getTime();
+    localStorage.setItem('install_time', now);
+    chrome.tabs.create({url: "options.html"});
+}
+install_notice();
 
 // getActiveTab();
 
@@ -89,7 +98,7 @@ function loadSettingsAndEvaluate(artifact){
             
             let errorMessage = {
                 messagetype: messageTypes.loginFailedMessage,
-                message: {response:"no Login Settings have been saved yet. Go to the options page."},
+                message: {response:"No Login Settings have been saved yet. Go to the options page."},
                 artifact: artifact
             }
             console.log('sendmessage');

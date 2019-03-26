@@ -1,25 +1,182 @@
-# chrome-extension-nexus-iq
+# Chrome Extension for Sonatype Nexexus IQ
+
+<img src="images/SON_logo_favicon.png" alt="drawing" width="100"/>
+</br>
 Sonatype Nexus IQ Server scan of a component from a chrome extension
 
 [![DepShield Badge](https://depshield.sonatype.org/badges/ctownshend/chrome-extension-nexus-iq/depshield.svg)](https://depshield.github.io)
 
 [![CircleCI](https://circleci.com/gh/ctownshend/chrome-extension-nexus-iq.svg?style=svg)](https://circleci.com/gh/ctownshend/chrome-extension-nexus-iq)
 
-# Version 1.7.4-Styling
+
+## Purpose
+To allow you to inspect a package before you download it. The plugin requires a valid Sonatype Nexus Lifecycle instance. You must be licensed to use Nexus lifecycle to use this plugin.
+The plugin can scan packages at the following repositories.
+
+1. Java - maven - https://search.maven.org/
+2. Java - maven - https://mvnrepository.com/
+3. JS/Node - npm - https://www.npmjs.com/
+4. .Net - nuget - https://www.nuget.org/
+5. Ruby - rubygems - https://rubygems.org/
+6. Python - pypi - https://pypi.org/
+7. php - packagist/composer/ -  https://packagist.org/
+8. R - CRAN -  https://cran.r-project.org/
+9. Rust - Crates-  https://crates.io/
+10. Golang - Go - https://gocenter.jfrog.com/
+
+
+##Installation Instructions
+1. Download the plugin from Github
+2. Open Chrome Browser
+3. Click on the three dots, then More Tools, then Extensions
+<br/>
+<img src="images/Extensions.png" alt="drawing" width="100"/>
+<br/>
+4. Click on load unpacked
+<br/>
+<img src="images/Extensions_Load_upacked.png" alt="drawing" width="100"/>
+<br/>
+5. Navigate to the folder where you downloaded the plugin fro gihub onto your local machine.
+<br/>
+<img src="images/Extensions_Choose_Folder.png" alt="drawing" width="100"/>
+<br/>
+
+6. You will be prompted to enter your login details. (Important: Please not that this version stores your details in plain text in Chrome Storage. We are investigated secure storage but at this time we do not support it.)
+<br/>
+<img src="images/Extensions_Empty_login.png" alt="drawing" width="100"/>
+<br/>
+7. Enter your delays and click save.
+<br/>
+<img src="images/Extensions_Login_Entered.png" alt="drawing" width="100"/>
+<br/>
+7. You will be advised that your details are saved, and the screen will close. You will be taken back to the Extensions Install screen in Chrome. Close the screen and begin using.
+
+8. The installer will have created a new icon in your Chrome Menu Bar.
+<br/>
+<img src="images/Extensions_Icon_created.png" alt="drawing" width="100"/>
+<br/>
+
+
+
+## Usage
+1. The install will create a new icon as per the instructions above above.
+<br/>
+<img src="images/Extensions_Icon_created.png" alt="drawing" width="100"/>
+<br/>
+
+2. The plugin will work on any new page opened after install. It will not work on pages already opened at time of install.
+
+3. Navigate to one of the pages that the extension is compatible with (see the list below).
+
+4. Click on the Blue Lightbulb and you will see a waiting cursor animation then your data.
+<br/>
+<img src="images/Extension_lodash_-_npm_4.17.9.png" alt="drawing" width="100"/>
+<br/>
+4.1 The solution will think for a second
+<br/>
+<img src="images/Extension_thinking_icon.png" alt="drawing" width="100"/>
+<br/>
+
+5. Component Information
+<br/>
+<img src="images/Extension_Component_info.png" alt="drawing" width="100"/>
+<br/>
+6. License Information
+<br/>
+<img src="images/Extension_Licensing.png" alt="drawing" width="100"/>
+<br/>
+
+6. Security Information
+<br/>
+<img src="images/Extension_Security.png" alt="drawing" width="100"/>
+<br/>
+
+## Uninstall
+If you do not want to use the extension then you can right click on the icon and choose Remove from Chrome
+<br/>
+<img src="images/Extension_Disabled.png" alt="drawing" width="100"/>
+<br/>
+
+
+
+
+
+
+### The list of pages that are supported are here.
+
+
+* Java - maven - <br/>
+`https://search.maven.org/artifact/<group>/<artifact>/<version>/<extension>`
+<br/>
+e.g.
+
+* Java - maven - <br/>
+`https://mvnrepository.com/artifact/<group>/<artifact>/<version>`
+* JS/Node - npm - <br/>
+`https://www.npmjs.com/package/<package>`
+<br/>
+and
+<br/>
+`https://www.npmjs.com/package/<package>/v/<version>`
+<br/>
+e.g. 
+https://www.npmjs.com/package/lodash/
+<br/>
+and
+<br/>
+https://www.npmjs.com/package/lodash/v/4.17.9
+
+* DotNet - nuget - 
+<br/>
+`https://www.nuget.org/packages/<package>/<version>`
+<br/>
+e.g.
+https://www.nuget.org/packages/LibGit2Sharp/0.1.0
+<br/>
+* Ruby - rubygems - 
+<br/>`https://rubygems.org/gems/<package>`
+e.g. https://rubygems.org/gems/bundler
+<br/>
+* Python - pypi - `https://pypi.org/<package>/`
+<br/>
+e.g. https://pypi.org/project/Django/
+<br/>or<br/>
+`https://pypi.org/<package>/<version>/`
+e.g. https://pypi.org/project/Django/1.6/
+<br/>
+* php - packagist/composer/ -  `https://packagist.org/`
+<br/>
+e.g.
+https://packagist.org/packages/drupal/drupal
+<br/>
+* R - CRAN -  <br/>`https://cran.r-project.org/`
+<br/>
+e.g. https://cran.r-project.org/web/packages/A3/index.html
+<br/>
+* Rust - Crates-  <br/>`https://crates.io/`
+<br/>e.g. https://crates.io/crates/random
+<br/>
+* Golang - Go - 
+<br/>`https://gocenter.jfrog.com`
+<br/>e.g. https://gocenter.jfrog.com/github.com~2Fjbenet~2Fgo-random/versions
+<br/>
+
+## Version History
+### Version 1.7.4-Styling
 * Styling of User interface
 
 
 
-# Version 1.7.3-All URLS
+### Version 1.7.3-All URLS
 * Supports running IQ server on any URL
 * Fixed various bugs
 
-# Version 1.7.2-added new formats
+### Version 1.7.2-added new formats
 * added new formats
 * Fixed various bugs
 * Added unit tests
 
-## Formats/package manager pages supported as of 1.7.2
+#### Formats/package manager pages supported as of 1.7.2
 * Java - maven - https://search.maven.org/
 * Java - maven - https://mvnrepository.com/
 * JS/Node - npm - https://www.npmjs.com/
@@ -31,12 +188,12 @@ Sonatype Nexus IQ Server scan of a component from a chrome extension
 * Rust - Crates-  https://crates.io/
 * Golang - Go - https://gocenter.jfrog.com/
 
-# Version 1.7.1 - Fixed popup
+### Version 1.7.1 - Fixed popup
 * Fixed popup logic bug. 
 * Began adding testing
 
 
-# Version 1.7 - initial release
+### Version 1.7 - initial release
 Complete rewrite to fix cookie problem with calling Nexus IQ server.
 I have decided the best way to fix the security issues for now is to limit access to http://iq-server:8070. 
 So you will have to alias your localhost as iq-server in your /etc/hosts/ file to use this plugin for now.
