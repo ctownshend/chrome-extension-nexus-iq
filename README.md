@@ -92,7 +92,7 @@ The list of pages that are supported are here.
 <br/>e.g. https://pypi.org/project/Django/
 <br/>or Pattern - `https://pypi.org/<package>/<version>/`
 <br/>e.g. https://pypi.org/project/Django/1.6/
-* php - packagist/composer/ -  
+* php - packagist/composer/ -
 <br/>Pattern - `https://packagist.org/`
 <br/>e.g. https://packagist.org/packages/drupal/drupal
 * R - CRAN -  <br/>`https://cran.r-project.org/`
@@ -143,8 +143,11 @@ If you do not want to use the extension then you can right click on the icon and
 
 
 
-## Drop
+
 ### Version History
+#### Version 1.7.5
+* Added README.md
+
 #### Version 1.7.4-Styling
 * Styling of User interface
 
