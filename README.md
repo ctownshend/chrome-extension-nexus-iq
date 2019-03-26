@@ -5,6 +5,11 @@ Sonatype Nexus IQ Server scan of a component from a chrome extension
 
 [![CircleCI](https://circleci.com/gh/ctownshend/chrome-extension-nexus-iq.svg?style=svg)](https://circleci.com/gh/ctownshend/chrome-extension-nexus-iq)
 
+
+# Version 1.7.3-All URLS
+* Supports running IQ server on any URL
+* Fixed various bugs
+
 # Version 1.7.2-added new formats
 * added new formats
 * Fixed various bugs
