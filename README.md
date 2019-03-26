@@ -72,7 +72,7 @@ The list of pages that are supported are here.
 * Java - maven - <br/>
 `https://search.maven.org/artifact/<group>/<artifact>/<version>/<extension>`
 <br/>e.g. https://search.maven.org/artifact/org.apache.struts/struts2-core/2.3.30/jar
-* Java - maven
+* Java - maven<br/>
 `https://mvnrepository.com/artifact/<group>/<artifact>/<version>`
 <br/>e.g. https://mvnrepository.com/artifact/commons-collections/commons-collections/3.2.1
 * JS/Node - npm - <br/>
@@ -81,6 +81,12 @@ The list of pages that are supported are here.
 <br/>and
 <br/>`https://www.npmjs.com/package/<package>/v/<version>`
 <br/>e.g. https://www.npmjs.com/package/lodash/v/4.17.9
+* DotNet - nuget - 
+<br/>
+`https://www.nuget.org/packages/<package>/<version>`
+<br/>
+e.g. https://www.nuget.org/packages/LibGit2Sharp/0.1.0
+<br/>
 
 
 ## Installation
