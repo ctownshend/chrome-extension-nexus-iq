@@ -13,7 +13,7 @@ Sonatype Nexus IQ Server scan of a component from a chrome extension
 - [Usage](#usage)
 - [Examples](#examples)
 - [Installation](#installation)
-- [Support](#support)
+
 
 
 ## Purpose
@@ -54,16 +54,12 @@ The plugin can scan packages at the following repositories.
 <br/>
 
 5. Component Information
-<br/>
 <img src="images/Extension_Component_info.png" alt="drawing" width="250"/>
 <br/>
 6. License Information
-<br/>
 <img src="images/Extension_Licensing.png" alt="drawing" width="250"/>
 <br/>
-
-6. Security Information
-<br/>
+7. Security Information
 <img src="images/Extension_Security.png" alt="drawing" width="250"/>
 <br/>
 
@@ -86,39 +82,6 @@ The list of pages that are supported are here.
 <br/>`https://www.npmjs.com/package/<package>/v/<version>`
 <br/>e.g. https://www.npmjs.com/package/lodash/v/4.17.9
 
-* DotNet - nuget - 
-<br/>
-`https://www.nuget.org/packages/<package>/<version>`
-<br/>
-e.g. https://www.nuget.org/packages/LibGit2Sharp/0.1.0
-<br/>
-* Ruby - rubygems - 
-<br/>`https://rubygems.org/gems/<package>`
-e.g. https://rubygems.org/gems/bundler
-<br/>
-* Python - pypi - `https://pypi.org/<package>/`
-<br/>
-e.g. https://pypi.org/project/Django/
-<br/>or<br/>
-`https://pypi.org/<package>/<version>/`
-e.g. https://pypi.org/project/Django/1.6/
-<br/>
-* php - packagist/composer/ -  `https://packagist.org/`
-<br/>
-e.g.
-https://packagist.org/packages/drupal/drupal
-<br/>
-* R - CRAN -  <br/>`https://cran.r-project.org/`
-<br/>
-e.g. https://cran.r-project.org/web/packages/A3/index.html
-<br/>
-* Rust - Crates-  <br/>`https://crates.io/`
-<br/>e.g. https://crates.io/crates/random
-<br/>
-* Golang - Go - 
-<br/>`https://gocenter.jfrog.com`
-<br/>e.g. https://gocenter.jfrog.com/github.com~2Fjbenet~2Fgo-random/versions
-<br/>
 
 ## Installation
 1. Download the plugin from Github
