@@ -1,11 +1,9 @@
 # Chrome Extension for Sonatype Nexexus IQ
-
 <img src="images/SON_logo_favicon.png" alt="drawing" width="100"/>
 </br>
 Sonatype Nexus IQ Server scan of a component from a chrome extension
 
 [![DepShield Badge](https://depshield.sonatype.org/badges/ctownshend/chrome-extension-nexus-iq/depshield.svg)](https://depshield.github.io)
-
 [![CircleCI](https://circleci.com/gh/ctownshend/chrome-extension-nexus-iq.svg?style=svg)](https://circleci.com/gh/ctownshend/chrome-extension-nexus-iq)
 
 ## Table of Contents
@@ -14,8 +12,6 @@ Sonatype Nexus IQ Server scan of a component from a chrome extension
 - [Usage](#usage)
 - [Examples](#examples)
 - [Installation](#installation)
-
-
 
 ## Purpose
 To allow you to inspect a package before you download it. The plugin requires a valid Sonatype Nexus Lifecycle instance. You must be licensed to use Nexus lifecycle to use this plugin.
@@ -39,7 +35,7 @@ The data is sourced from IQ server which accesses the HDS for those supported ec
 ## Usage
 1. The install will create a new icon in your Chrome Browser next to the location box.
 <img src="images/Extensions_Icon_created.png" alt="drawing" width="300"/>
-<br/>
+
 2. The plugin will work on any new page opened after install. It will not work on pages already opened at time of install.
 
 3. Navigate to one of the pages that the extension is compatible with (see the list below).
@@ -99,7 +95,7 @@ Pattern - `https://cran.r-project.org/`
 ### Rust - Crates
 Pattern - `https://crates.io/`
 <br/>e.g. https://crates.io/crates/random
-### Golang - Go 
+### Golang - Gocenter
 `https://gocenter.jfrog.com`
 <br/>e.g. https://gocenter.jfrog.com/github.com~2Fjbenet~2Fgo-random/versions
 
