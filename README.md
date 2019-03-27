@@ -1,10 +1,5 @@
-# Chrome Extension for Sonatype Nexexus IQ
-<img src="images/SON_logo_favicon.png" alt="drawing" width="100"/>
-</br>
-Sonatype Nexus IQ Server scan of a component from a chrome extension
-
-[![DepShield Badge](https://depshield.sonatype.org/badges/ctownshend/chrome-extension-nexus-iq/depshield.svg)](https://depshield.github.io)
-[![CircleCI](https://circleci.com/gh/ctownshend/chrome-extension-nexus-iq.svg?style=svg)](https://circleci.com/gh/ctownshend/chrome-extension-nexus-iq)
+# Chrome Extension for Sonatype Nexus IQ
+[![DepShield Badge](https://depshield.sonatype.org/badges/ctownshend/chrome-extension-nexus-iq/depshield.svg)](https://depshield.github.io) [![CircleCI](https://circleci.com/gh/ctownshend/chrome-extension-nexus-iq.svg?style=svg)](https://circleci.com/gh/ctownshend/chrome-extension-nexus-iq)
 
 ## Table of Contents
 - [Purpose](#purpose)
@@ -29,7 +24,7 @@ The plugin can scan packages at the following repositories.
 10. Golang - Go - https://gocenter.jfrog.com/
 
 ## Data
-The data is sourced from IQ server which accesses the HDS for those supported ecosystems supported. Currently 1-6. Systems 7-10 get their data from Sonatype OSSIndex.
+The data is sourced from IQ server which accesses the HDS for those supported ecosystems supported. Currently 1-6. Systems 7-10 get their data from Sonatype OSSIndex ( https://ossindex.sonatype.org/ ).
 
 
 ## Usage
@@ -182,7 +177,7 @@ I have decided the best way to fix the security issues for now is to limit acces
 So you will have to alias your localhost as iq-server in your /etc/hosts/ file to use this plugin for now.
 I will think about a change which gives access to all URLS like so below
 
-Add "*://*/*" to permissions section like so
+Add `*://*/*` to permissions section like so
 
 `"permissions": [
     "*://*/*",
