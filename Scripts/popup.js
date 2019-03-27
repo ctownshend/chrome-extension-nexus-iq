@@ -205,7 +205,7 @@ function renderComponentDataOSSIndex(message){
     $("#hash").html(message.message.response.coordinates);
     
     //document.getElementById("matchstate").innerHTML = componentInfoData.componentDetails["0"].matchState;
-    $("#matchstate").html(message.message.response.reference)
+    // $("#matchstate").html(message.message.response.reference)
 }
 function renderLicenseDataOSSIndex(message){
     //not supported

@@ -34,10 +34,10 @@
     "page_action": {
       "default_popup": "popup.html",
       "default_icon": {
-         "16": "images/IQ_Default.png",
-         "32": "images/IQ_Default.png",
-         "48": "images/IQ_Default.png",
-         "128": "images/IQ_Default.png"
+         "16": "images/SON_logo_favicon.png",
+         "32": "images/SON_logo_favicon.png",
+         "48": "images/SON_logo_favicon.png",
+         "128": "images/SON_logo_favicon.png"
        }
      }, 
     "icons": {
