@@ -137,6 +137,12 @@ If you do not want to use the extension then you can right click on the icon and
 
 
 ### Version History
+#### Version 1.7.7
+* Bug fix whereby sometimes the Waiting page would sit there for ever. Due to content script not being injected. Seems the content script is always injected now as I inject it with code rather than in the manifest.json declaration
+
+#### Version 1.7.6
+* Release fixes
+
 #### Version 1.7.5
 * Added README.md
 
