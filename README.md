@@ -66,8 +66,6 @@ Pattern -`https://mvnrepository.com/artifact/<group>/<artifact>/<version>`
 <br/>e.g. https://mvnrepository.com/artifact/commons-collections/commons-collections/3.2.1
 ### JS/Node - npm
 Pattern - `https://www.npmjs.com/package/<package>`
-<br/>e.g. https://www.npmjs.com/package/lodash/
-<br/>and
 <br/>Pattern - `https://www.npmjs.com/package/<package>/v/<version>`
 <br/>e.g. https://www.npmjs.com/package/lodash/v/4.17.9
 ### DotNet - nuget
@@ -77,19 +75,18 @@ Pattern - `https://www.nuget.org/packages/<package>/<version>`
 Pattern - `https://rubygems.org/gems/<package>`
 <br/>e.g. https://rubygems.org/gems/bundler
 ### Python - pypi
-Pattern - `https://pypi.org/<package>/`
-<br/>e.g. https://pypi.org/project/Django/
+Pattern - `https://pypi.org/project/<project>/`
 <br/>or Pattern - `https://pypi.org/<package>/<version>/`
 <br/>e.g. https://pypi.org/project/Django/1.6/
 ### php - packagist/composer/
-Pattern - `https://packagist.org/`
-<br/>e.g. https://packagist.org/packages/drupal/drupal
+Pattern - `https://packagist.org/packages/<package>/`
+<br/>e.g. https://packagist.org/packages/phpbb/phpbb#3.1.2
 ### R - CRAN
 Pattern - `https://cran.r-project.org/`
-<br/>e.g. https://cran.r-project.org/web/packages/A3/index.html
+<br/>e.g. https://cran.r-project.org/web/packages/xgboost/index.html
 ### Rust - Crates
 Pattern - `https://crates.io/`
-<br/>e.g. https://crates.io/crates/random
+<br/>e.g. https://crates.io/crates/claxon/0.4.0
 ### Golang - Gocenter
 `https://gocenter.jfrog.com`
 <br/>e.g. https://gocenter.jfrog.com/github.com~2Fjbenet~2Fgo-random/versions
@@ -135,67 +132,3 @@ If you do not want to use the extension then you can right click on the icon and
 
 
 
-
-### Version History
-#### Version 1.7.7
-* Bug fix whereby sometimes the Waiting page would sit there for ever. Due to content script not being injected. Seems the content script is always injected now as I inject it with code rather than in the manifest.json declaration
-
-#### Version 1.7.6
-* Release fixes
-
-#### Version 1.7.5
-* Added README.md
-
-#### Version 1.7.4-Styling
-* Styling of User interface
-
-
-
-#### Version 1.7.3-All URLS
-* Supports running IQ Server on any URL
-* Fixed various bugs
-
-#### Version 1.7.2-added new formats
-* added new formats
-* Fixed various bugs
-* Added unit tests
-
-##### Formats/package manager pages supported as of 1.7.2
-* Java - maven - https://search.maven.org/
-* Java - maven - https://mvnrepository.com/
-* JS/Node - npm - https://www.npmjs.com/
-* .Net - nuget - https://www.nuget.org/
-* Ruby - rubygems - https://rubygems.org/
-* Python - pypi - https://pypi.org/
-* php - packagist/composer/ -  https://packagist.org/
-* R - CRAN -  https://cran.r-project.org/
-* Rust - Crates-  https://crates.io/
-* Golang - Go - https://gocenter.jfrog.com/
-
-#### Version 1.7.1 - Fixed popup
-* Fixed popup logic bug. 
-* Began adding testing
-
-
-#### Version 1.7 - initial release
-Complete rewrite to fix cookie problem with calling Nexus IQ Server.
-I have decided the best way to fix the security issues for now is to limit access to http://iq-server:8070. 
-So you will have to alias your localhost as iq-server in your /etc/hosts/ file to use this plugin for now.
-I will think about a change which gives access to all URLS like so below
-
-Add `*://*/*` to permissions section like so
-
-`"permissions": [
-    "*://*/*",
- `   
-    
-This would then mean you would not need to alias Nexus IQ.
-
-Supports scanning components in the following repos
-* https://search.maven.org/
-* https://mvnrepository.com/
-* https://www.npmjs.com/
-* https://www.nuget.org/
-* https://rubygems.org/
-* https://pypi.org/
-* https://packagist.org/
