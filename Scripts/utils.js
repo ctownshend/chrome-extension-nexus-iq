@@ -553,7 +553,7 @@ function parseCratesURL( url) {
     //server is crates, language is rust
     //https://crates.io/crates/rand
     //no version in the URL    
-    let format = formats.crates;
+    let format = formats.cargo;
     let datasource = dataSources.OSSINDEX;
 
     return false;
