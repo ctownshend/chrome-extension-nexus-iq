@@ -151,15 +151,10 @@ async function gotMessage(message, sender, sendResponse){
                 console.log('coming in here really late.-respMessage');
                 // jQuery("#response").append('<div class="messages ok">' + message.message.response + '</div>');
                 console.log(respMessage);
-                var componentDetails = respMessage.message.response;
-                console.log('componentDetails', componentDetails);
-                let nexusArtifact = componentDetails.componentDetails[0];
+                
                 // $("#response").html(findings.toString());
                 // displayFindings(message);
-                let htmlCreated = createHTML(message);
-                console.log('nexusArtifact', nexusArtifact);
-                let remediation = await showRemediation(nexusArtifact, settings)
-                let allVersions = await GetAllVersions(nexusArtifact, settings, remediation)
+                let htmlCreated = await createHTML(message, settings);
 
             }            
             hideLoader(hasError);
@@ -219,7 +214,7 @@ function createAllversionsHTML(data, remediation){
         let popularity = element.relativePopularity
         let license = (typeof element.policyMaxThreatLevelsByCategory.LICENSE === "undefined" ? 0 : element.policyMaxThreatLevelsByCategory.LICENSE )
         let myDate = new Date(element.catalogDate)
-        let catalogDate = myDate.toLocaleString()
+        let catalogDate = myDate.toLocaleDateString()
         let security = element.highestSecurityVulnerabilitySeverity
         let majorRevisionStep = element.majorRevisionStep
         strData += version + ", "
@@ -244,14 +239,35 @@ function createAllversionsHTML(data, remediation){
 
     grid = new Slick.Grid("#myGrid", slickData, columns, options);
     if (remediationRow >=0){
-
+        console.log('remediationRow', remediationRow)
         $($('.grid-canvas').children()[remediationRow]).css('background-color','lawngreen');
+        
     }
+    grid.onViewportChanged.subscribe(function(e, args){
+        //event handling code.
+        //find the fix
+        console.log('grid.onViewportChanged')
+
+        let myCell = $("div").filter(function() {
+            // Matches exact string   
+            return $(this).text() === remediation;
+            });
+
+        // let myCell = $('div:contains("'+remediation+'")')
+        console.log(myCell);
+        //#myGrid > div.slick-pane.slick-pane-top.slick-pane-left > div.slick-viewport.slick-viewport-top.slick-viewport-left > div > div:nth-child(22)
+        //<div class="ui-widget-content slick-row odd" style="top:2575px"><div class="slick-cell l0 r0">4.17.11</div><div class="slick-cell l1 r1">0</div><div class="slick-cell l2 r2">0</div><div class="slick-cell l3 r3"></div><div class="slick-cell l4 r4">13/09/2018, 04:32:16</div><div class="slick-cell l5 r5">false</div></div>
+        
+        //let myParent = myCell.closest();
+        let myParent = $(myCell).parents('div .slick-row')
+        //$($('.grid-canvas').children()[remediationRow])
+        myParent.css('background-color','lawngreen');;
+    });
     // $("#remediation").html(strData);
 }
 
 
-function createHTML(message)
+async function createHTML(message, settings)
 {
     console.log('createHTML(message)');
     console.log(message);
@@ -262,9 +278,20 @@ function createHTML(message)
     // console.log(thisComponent)
     switch (message.artifact.datasource){
         case dataSources.NEXUSIQ:
+            var componentDetails = message.message.response;
+            console.log('componentDetails', componentDetails);
+                
             renderComponentData(message);
             renderLicenseData(message);
-            renderSecurityData(message);
+            let hasVulns = renderSecurityData(message);
+            let nexusArtifact = componentDetails.componentDetails[0];
+            console.log('nexusArtifact', nexusArtifact);
+            let remediation
+            if (hasVulns) {
+                remediation = await showRemediation(nexusArtifact, settings)
+            }
+            let allVersions = await GetAllVersions(nexusArtifact, settings, remediation)
+
             break;
         case dataSources.OSSINDEX:
         //from OSSINdex
@@ -272,7 +299,8 @@ function createHTML(message)
             renderComponentDataOSSIndex(message);
             renderLicenseDataOSSIndex(message);
             renderSecurityDataOSSIndex(message);
-
+            let advice = 'No remediation advice available'
+            $("#remediation").html(advice); 
             break;
         default:
             //not handled
@@ -542,6 +570,7 @@ function styleCVSS(severity){
 
 
 function renderSecurityData(message){
+    let retVal = false;
     var thisComponent = message.message.response.componentDetails["0"];
  
     //document.getElementById("securityData_securityIssues").innerHTML = componentInfoData.componentDetails["0"].component.componentIdentifier.coordinates.securityData_securityIssues;
@@ -553,6 +582,7 @@ function renderSecurityData(message){
         return  securityIssues2.severity - securityIssues1.severity;
     });
     if(securityIssues.length > 0){
+        retVal = true;
         console.log(securityIssues);
         for(i=0; i < securityIssues.length; i++){
             let securityIssue = securityIssues[i];
@@ -613,7 +643,7 @@ function renderSecurityData(message){
     }  
 
 
-
+    return retVal;
     //securityurl=<a href="{{{url}}}" target="_blank">url</a>    
 }
 
@@ -679,7 +709,7 @@ async function showRemediation(nexusArtifact, settings){
         newVersion = respData.remediation.versionChanges[0].data.component.componentIdentifier.coordinates.version
         advice = `Remediation advice Upgrade to the new version:<strong> ${newVersion}</strong>`
     }else{
-        advice = 'No good versions available.'
+        advice = ''
     }
     
     
