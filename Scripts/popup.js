@@ -1,4 +1,9 @@
+
+
 console.log ('popup.js');
+
+var artifact
+
 if (typeof chrome !== "undefined"){
     chrome.runtime.onMessage.addListener(gotMessage);
 }
@@ -14,7 +19,15 @@ $(function () {
     showLoader();
     $('#error').hide()
     $('#tabs').tabs();
-  
+
+    $("div#dialog").dialog ({
+        show : "slide",
+        hide : "puff",        
+        autoOpen : false,
+        closeOnEscape: true,
+        width: 425
+      });
+    
     //begin evaluation sends a message to the background script
     //amd to the content script
     //I may be able to cheat and just get the URL, which simplifies the logic
@@ -46,7 +59,7 @@ function beginEvaluation(){
         
         if (checkPageIsHandled(url)){
             //yes we know about this sort of URL so continue
-            let artifact = ParsePageURL(url)
+            artifact = ParsePageURL(url)
             if (artifact){
                 //evaluate now
                 //as the page has the version so no need to insert dom
@@ -116,7 +129,7 @@ function installScripts(message){
 
 
 
-function gotMessage(message, sender, sendResponse){
+async function gotMessage(message, sender, sendResponse){
     console.log('gotMessage')
     console.log(message)
     // const respMessage = JSON.parse(message)
@@ -125,6 +138,10 @@ function gotMessage(message, sender, sendResponse){
     console.log('popup got message');
     console.log(respMessage);
     let hasError = false;
+    let promise =  await GetSettings(['url', 'username', 'password', 'appId', 'appInternalId'])
+    let settings = BuildSettings(promise.url, promise.username, promise.password, promise.appId, promise.appInternalId)
+    console.log('settings', settings)
+
     switch(respMessage.messagetype){
         case messageTypes.displayMessage:    
             // alert("displayMessage");
@@ -135,10 +152,15 @@ function gotMessage(message, sender, sendResponse){
                 // jQuery("#response").append('<div class="messages ok">' + message.message.response + '</div>');
                 console.log(respMessage);
                 var componentDetails = respMessage.message.response;
-                console.log(componentDetails);
+                console.log('componentDetails', componentDetails);
+                let nexusArtifact = componentDetails.componentDetails[0];
                 // $("#response").html(findings.toString());
                 // displayFindings(message);
                 let htmlCreated = createHTML(message);
+                console.log('nexusArtifact', nexusArtifact);
+                let remediation = await showRemediation(nexusArtifact, settings)
+                let allVersions = await GetAllVersions(nexusArtifact, settings, remediation)
+
             }            
             hideLoader(hasError);
             break;
@@ -162,6 +184,70 @@ function gotMessage(message, sender, sendResponse){
     }
         
 
+}
+
+function createAllversionsHTML(data, remediation){
+    console.log('createAllversionsHTML', data);
+    let strData = ""
+    var grid;
+
+    var options = {
+        enableCellNavigation: false,
+        enableColumnReorder: false
+    };
+    
+    var slickData = [];
+   
+    var columns = [
+        {id: 'version', name: 'version', field: 'version'},
+        {id: 'security', name: 'security', field: 'security'},
+        {id: 'license', name: 'license', field: 'license'},
+        {id: 'popularity', name: 'popularity', field: 'popularity'},
+        {id: 'catalogDate', name: 'catalogDate', field: 'catalogDate'},
+        
+        {id: 'majorRevisionStep', name: 'majorRevisionStep', field: 'majorRevisionStep'},
+        
+
+    ];
+    var colId = 0;
+    let rowId = 0;
+    let remediationRow = -1;
+    data.forEach(element => {
+        // console.log('element.componentIdentifier.coordinates.version', element.componentIdentifier.coordinates.version)
+        let version = element.componentIdentifier.coordinates.version    
+        if (remediation === version) {remediationRow = rowId}
+        let popularity = element.relativePopularity
+        let license = (typeof element.policyMaxThreatLevelsByCategory.LICENSE === "undefined" ? 0 : element.policyMaxThreatLevelsByCategory.LICENSE )
+        let myDate = new Date(element.catalogDate)
+        let catalogDate = myDate.toLocaleString()
+        let security = element.highestSecurityVulnerabilitySeverity
+        let majorRevisionStep = element.majorRevisionStep
+        strData += version + ", "
+        slickData[rowId] = {
+            version: version,
+            security: security,
+            license: license,
+            popularity: popularity,
+            catalogDate: catalogDate,
+            majorRevisionStep: majorRevisionStep
+        };
+        // var d = (slickData[rowId] = {});
+        // d["version"] = version
+        // d["security"] = security
+        // d["license"] =  license
+        // d["popularity"] =  popularity        
+        rowId++;
+    });
+    console.log('strData', strData)
+    console.table(slickData)
+
+
+    grid = new Slick.Grid("#myGrid", slickData, columns, options);
+    if (remediationRow >=0){
+
+        $($('.grid-canvas').children()[remediationRow]).css('background-color','lawngreen');
+    }
+    // $("#remediation").html(strData);
 }
 
 
@@ -312,6 +398,7 @@ function renderComponentData(message){
     };
     console.log(coordinates.version);
     $("#version").html(coordinates.version);
+    artifact.hash = component.hash;
     $("#hash").html(component.hash);
     
     //document.getElementById("matchstate").innerHTML = componentInfoData.componentDetails["0"].matchState;
@@ -474,11 +561,15 @@ function renderSecurityData(message){
             //console.log(securityIssue.reference);
             //console.log(i);
             let className = styleCVSS(securityIssue.severity);
-            strAccordion += '<h3><span class="headingreference">' + securityIssue.reference + '</span><span class="headingseverity ' + className +'">CVSS:' + securityIssue.severity + '</span></h3>';
+            let strVulnerability = securityIssue.reference;
+            strAccordion += '<h3><span class="headingreference">' + strVulnerability + '</span><span class="headingseverity ' + className +'">CVSS:' + securityIssue.severity + '</span></h3>';
             strAccordion += '<div>';
             strAccordion += '<table>'
             strAccordion += '<tr>'
-            strAccordion += '<td class="label">Reference:</td><td class="data">' + securityIssue.reference + '</td>';
+            
+         
+            let strDialog = `<div id="info_${strVulnerability}"><a href="#">${strVulnerability}<img  src="../images/icons8-info-filled-50.png" class="info" alt="Info"></a></div>`
+            strAccordion += '<td class="label">Reference:</td><td class="data">' + strDialog + '</td>';
             strAccordion += '</tr><tr>'
             strAccordion += '<td class="label">Severity:</td><td class="data">' + securityIssue.severity + '</td>';
             strAccordion += '</tr><tr>'
@@ -499,6 +590,20 @@ function renderSecurityData(message){
         // var autoHeight = $( "#accordion" ).accordion( "option", "autoHeight" );
         // $( "#accordion" ).accordion( "option", "autoHeight", false );
         // $("#accordion").accordion();
+        //add event listeners
+        for(i=0; i < securityIssues.length; i++){
+            let securityIssue = securityIssues[i];
+            // console.log(securityIssue);
+
+            //console.log(securityIssue.reference);
+            //console.log(i);
+            let strVulnerability = securityIssue.reference;
+            var createButton = document.getElementById(`info_${strVulnerability}`);
+            createButton.addEventListener('click', function() { showCVEDetail(strVulnerability); });
+            console.log(createButton)
+        }
+
+
     }else{
         strAccordion += '<h3>No Security Issues Found</h3>';
         $("#accordion").html(strAccordion);
@@ -506,6 +611,8 @@ function renderSecurityData(message){
         $('#accordion').accordion({heightStyle: 'panel'});
 
     }  
+
+
 
     //securityurl=<a href="{{{url}}}" target="_blank">url</a>    
 }
@@ -520,6 +627,182 @@ function hideLoader(hasError)
     //$(".loader").fadeOut("slow");
     document.getElementById("loader").style.display = "none";
     document.getElementById("tabs").style.display = "block";
+}
+
+async function showCVEDetail(cveReference){
+    console.log('showCVEDetail', cveReference)
+    //  alert(cveReference)
+    //get CVEetail with Axios
+    // let newElement = document.createElement("div");
+    // newNode=document.body.appendChild(newElement);
+    // newNode.setAttribute("id", "dialog");
+    let nexusArtifact = NexusFormat(artifact);
+    nexusArtifact.hash = artifact.hash;
+    let promise =  await GetSettings(['url', 'username', 'password', 'appId', 'appInternalId' ])
+    let settings = BuildSettings(promise.url, promise.username, promise.password, promise.appId, promise.appInternalId)
+    console.log('settings', settings)
+    // let settings = BuildSettings("http://iq-server:8070/", "admin", "admin123", 'webgoat7')
+    let myResp3 = await GetCVEDetails(cveReference, nexusArtifact, settings)
+    console.log('myResp3', myResp3)
+    let htmlDetails = myResp3.cvedetail.data.htmlDetails
+    
+    $("#dialog").html(htmlDetails);     
+    $('#dialog').dialog("open");
+    
+}
+
+async function showRemediation(nexusArtifact, settings){
+    console.log('showRemediation', nexusArtifact, settings)
+    console.log('settings', settings)
+    ///api/v2/components/remediation/application/{applicationInternalId}
+    let servername = settings.baseURL;
+    let url = `${servername}api/v2/components/remediation/application/${settings.appInternalId}`
+    chrome.cookies.remove({url: settings.baseURL, name: "CLMSESSIONID"});  
+    let response = await axios(url,
+        {
+            method: "post",
+            data: nexusArtifact.component,
+            withCredentials: true,
+            auth: {
+                username: settings.username,
+                password: settings.password
+            }
+        }        
+    );
+
+    
+    let respData = response.data;
+    console.log('respData', respData )
+    let newVersion
+    let advice
+    if (respData.remediation.versionChanges.length > 0){
+        newVersion = respData.remediation.versionChanges[0].data.component.componentIdentifier.coordinates.version
+        advice = `Remediation advice Upgrade to the new version:<strong> ${newVersion}</strong>`
+    }else{
+        advice = 'No good versions available.'
+    }
+    
+    
+    $("#remediation").html(advice);     
+    return newVersion;
+    
+}
+
+async function GetSettings(keys){
+    let settings;    
+    let promise = new Promise((resolve, reject) => {
+        chrome.storage.sync.get(keys, (items) => {
+            let err = chrome.runtime.lastError;
+            if (err) {
+                reject(err);
+            } else {
+                resolve(items);
+            }
+        });
+    });
+    return promise;
+}
+
+async function GetAllVersions(nexusArtifact, settings, remediation){
+    console.log('GetAllVersions', nexusArtifact);
+    let retVal
+    // let promise =  await GetSettings(['url', 'username', 'password', 'appId'])
+    // let settings = BuildSettings(promise.url, promise.username, promise.password, promise.appId)
+
+    // let comp = "%7B%22format%22%3A%22maven%22%2C%22coordinates%22%3A%7B%22artifactId%22%3A%22commons-collections%22%2C%22classifier%22%3A%22%22%2C%22extension%22%3A%22jar%22%2C%22groupId%22%3A%22commons-collections%22%2C%22version%22%3A%223.2.1%22%7D%7D"
+    let comp = encodeURI(JSON.stringify(nexusArtifact.component.componentIdentifier));
+    // console.log('nexusArtifact', nexusArtifact);
+    console.log('comp', comp);
+    // let timestamp = "1554129430974"
+    var d = new Date();
+    var timestamp = d.getDate();
+    
+    // let hash = "761ea405b9b37ced573d"
+    let hash = nexusArtifact.component.hash;
+    let matchstate = "exact"
+    // let report = "2d9054219bd549db8700d3bfd027d7fd"
+    //let settings = BuildSettings("http://iq-server:8070/", "admin", "admin123")
+    let servername = settings.baseURL;
+    // let url = `${servername}rest/ci/componentDetails/application/${appId}/allVersions?componentIdentifier=${comp}&hash=${hash}&matchState=${matchstate}&reportId=${report}&timestamp=${timestamp}`
+    let url = `${servername}rest/ide/componentDetails/application/${settings.appId}/allVersions?componentIdentifier=${comp}&hash=${hash}&matchState=${matchstate}&timestamp=${timestamp}&proprietary=false`
+    // let url = `${servername}rest/ide/componentDetails/application/${appId}/allVersions?componentIdentifier=%7B%22format%22%3A%22maven%22%2C%22coordinates%22%3A%7B%22artifactId%22%3A%22commons-fileupload%22%2C%22classifier%22%3A%22%22%2C%22extension%22%3A%22jar%22%2C%22groupId%22%3A%22commons-fileupload%22%2C%22version%22%3A%221.3.1%22%7D%7D&hash=c621b54583719ac03104&matchState=exact&proprietary=false HTTP/1.1`
+    let response = await axios.get(url, {
+        auth: {
+            username: settings.username,
+            password: settings.password
+        }
+    });
+    let data = response.data;
+    createAllversionsHTML(data, remediation);
+    
+}
+    
+
+async function GetCVEDetails(cve, nexusArtifact, settings){
+    console.log('begin GetCVEDetails');
+    // let url="http://iq-server:8070/rest/vulnerability/details/cve/CVE-2018-3721?componentIdentifier=%7B%22format%22%3A%22maven%22%2C%22coordinates%22%3A%7B%22artifactId%22%3A%22springfox-swagger-ui%22%2C%22classifier%22%3A%22%22%2C%22extension%22%3A%22jar%22%2C%22groupId%22%3A%22io.springfox%22%2C%22version%22%3A%222.6.1%22%7D%7D&hash=4c854c86c91ab36c86fc&timestamp=1553676800618"
+    let servername = settings.baseURL;// + (settings.baseURL[settings.baseURL.length-1]=='/' ? '' : '/') ;//'http://iq-server:8070'
+    //let CVE = 'CVE-2018-3721'
+    let timestamp = Date.now()
+    let hash = nexusArtifact.hash;//'4c854c86c91ab36c86fc'
+    // let componentIdentifier = '%7B%22format%22%3A%22maven%22%2C%22coordinates%22%3A%7B%22artifactId%22%3A%22springfox-swagger-ui%22%2C%22classifier%22%3A%22%22%2C%22extension%22%3A%22jar%22%2C%22groupId%22%3A%22io.springfox%22%2C%22version%22%3A%222.6.1%22%7D%7D'
+    let componentIdentifier = encodeComponentIdentifier(nexusArtifact)
+    let vulnerability_source
+    if (cve.search('sonatype')>=0){
+        vulnerability_source = 'sonatype'
+    }
+    else{
+        //CVE type
+        vulnerability_source = 'cve'
+    }
+    //servername has a slash
+    
+    let url=`${servername}rest/vulnerability/details/${vulnerability_source}/${cve}?componentIdentifier=${componentIdentifier}&hash=${hash}&timestamp=${timestamp}`
+
+    let data = await axios.get(url, {
+        auth: {
+            username: settings.username,
+            password: settings.password
+        }
+    });
+    console.log('data', data);
+    let retVal
+    retVal =  data;
+    return {cvedetail: retVal};
+    // var response = await fetch(url, {
+    //     method: 'GET',
+    //     headers: {"Authorization" : settings.auth}
+    //     } );
+    // var body = await response.json(); // .json() is asynchronous and therefore must be awaited
+    // console.log(body);    
+    
+     
+    // try
+    // {
+    //     let resp = await fetch(url, {
+    //         method: 'GET',
+    //         headers: {"Authorization" : settings.auth}
+    //         })
+    //         .then(response => {
+    //             return response.json()
+    //         })
+    //         .then(data => {
+    //             retVal =  data
+    //             console.log('retVal', retVal)
+    //         })
+    //         .catch(function(err){
+    //             console.log('Fetch Error:-S', err);
+    //             throw err;
+    //         });
+    // }
+    // catch(err){
+    //     //an error was found
+    //     //retval is null
+    //     //not json
+    //     retval = {error:500, message: "Error parsing json or calling service"}
+    // }
+    // return {cvedetail: retVal};
+    // console.log('complete GetCVEDetails');
 }
 
 function showError(error)
