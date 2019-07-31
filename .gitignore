@@ -2,3 +2,4 @@
 node_modules
 .circleci/zzconfig.yml
 package-lock.json
+sample.tar.gz
