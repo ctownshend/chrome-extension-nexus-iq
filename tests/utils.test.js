@@ -165,7 +165,8 @@ test("Check NexusFormatNuget positive test", () => {
   let artifact = {
     format: "nuget",
     packageId: "LibGit2Sharp",
-    version: "0.1.0"
+    version: "0.1.0",
+    hash: null
   };
   let actual = NexusFormatNuget(artifact);
   //return a dictionary in Nexus Format ofr Nuget
@@ -191,7 +192,8 @@ test("Check NexusFormatPyPI positive test", () => {
   let artifact = {
     format: "pypi",
     packageId: "Django",
-    version: "1.6"
+    version: "1.6",
+    hash: null
   };
   let actual = NexusFormatPyPI(artifact);
   //return a dictionary in Nexus Format
@@ -220,7 +222,8 @@ test("Check NexusFormatRuby positive test", () => {
   let artifact = {
     format: "gem",
     packageId: "bundler ",
-    version: "2.0.1"
+    version: "2.0.1",
+    hash: null
   };
   let actual = NexusFormatRuby(artifact);
   //return a dictionary in Nexus Format
