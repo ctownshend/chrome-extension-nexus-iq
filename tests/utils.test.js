@@ -112,7 +112,8 @@ test("Check NexusFormatMaven positive test", () => {
     artifactId: "commons-collections",
     version: "3.2.1",
     extension: "jar",
-    classifier: ""
+    classifier: "",
+    hash: null
   };
   let actual = NexusFormatMaven(artifact);
   let expected = {
@@ -139,7 +140,8 @@ test("Check NexusFormatNPM positive test", () => {
   let artifact = {
     format: "npm",
     packageName: "lodash",
-    version: "4.17.11"
+    version: "4.17.11",
+    hash: null
   };
   let actual = NexusFormatNPM(artifact);
   let expected = {
