@@ -1,4 +1,4 @@
 {
-  "jshint.esversion": 9,
-  "jshint.enabled": false
+  "jshint.enable": false,
+  "jslint.enable": false,
 }
