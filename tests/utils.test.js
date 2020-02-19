@@ -112,7 +112,8 @@ test("Check NexusFormatMaven positive test", () => {
     artifactId: "commons-collections",
     version: "3.2.1",
     extension: "jar",
-    classifier: ""
+    classifier: "",
+    hash: null
   };
   let actual = NexusFormatMaven(artifact);
   let expected = {
@@ -139,7 +140,8 @@ test("Check NexusFormatNPM positive test", () => {
   let artifact = {
     format: "npm",
     packageName: "lodash",
-    version: "4.17.11"
+    version: "4.17.11",
+    hash: null
   };
   let actual = NexusFormatNPM(artifact);
   let expected = {
@@ -163,7 +165,8 @@ test("Check NexusFormatNuget positive test", () => {
   let artifact = {
     format: "nuget",
     packageId: "LibGit2Sharp",
-    version: "0.1.0"
+    version: "0.1.0",
+    hash: null
   };
   let actual = NexusFormatNuget(artifact);
   //return a dictionary in Nexus Format ofr Nuget
@@ -189,7 +192,8 @@ test("Check NexusFormatPyPI positive test", () => {
   let artifact = {
     format: "pypi",
     packageId: "Django",
-    version: "1.6"
+    version: "1.6",
+    hash: null
   };
   let actual = NexusFormatPyPI(artifact);
   //return a dictionary in Nexus Format
@@ -218,7 +222,8 @@ test("Check NexusFormatRuby positive test", () => {
   let artifact = {
     format: "gem",
     packageId: "bundler ",
-    version: "2.0.1"
+    version: "2.0.1",
+    hash: null
   };
   let actual = NexusFormatRuby(artifact);
   //return a dictionary in Nexus Format
